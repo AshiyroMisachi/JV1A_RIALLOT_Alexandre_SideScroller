@@ -66,7 +66,7 @@
         calque_Plateforme.setCollisionByProperty ({ estSolide: true });
 
         //creation perso
-        player = this.physics.add.sprite(100, 450, 'perso');
+        player = this.physics.add.sprite(800, 1472, 'perso');
         player.setBounce(0.2);
         player.setCollideWorldBounds(true);
         this.physics.add.collider(player, plateformes);
