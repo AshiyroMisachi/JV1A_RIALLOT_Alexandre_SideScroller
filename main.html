@@ -10,7 +10,7 @@
     <script type="text/javascript">
         var config = {
             type: Phaser.AUTO,
-            width: 1600, height: 1600,
+            width: 800, height: 800,
             physics: {
                     default: 'arcade',
                     arcade: {
@@ -23,9 +23,7 @@
         new Phaser.Game(config);
         function preload(){
             this.load.image("Phaser_tuilesdejeu", "assets/TilesetFinal.png")
-            this.load.image('salope','assets/BackgroundDonjon.png')
             this.load.tilemapTiledJSON("carte", "assets/Level1.json")
-
             this.load.spritesheet('perso','assets/perso.png',
             { frameWidth: 32, frameHeight: 48 });
         }
@@ -93,6 +91,14 @@
 
         cursors = this.input.keyboard.createCursorKeys();
         this.physics.add.collider(player, calque_contour);
+
+        // redimentionnement du monde avec les dimensions calculées via tiled
+        this.physics.world.setBounds(0, 0, 1600, 1600);
+        //  ajout du champs de la caméra de taille identique à celle du monde
+        this.cameras.main.setBounds(0, 0, 1600, 1600);
+        // ancrage de la caméra sur le joueur
+        this.cameras.main.startFollow(player);  
+        
         
     }
 
@@ -110,11 +116,12 @@
             player.setVelocityX(0); //vitesse nulle
             player.anims.play('turn'); //animation fait face caméra
         }
-        if (cursors.up.isDown && player.body.blocked.down){
+        if (cursors.up.isDown ){
             //si touche haut appuyée ET que le perso touche le sol
             player.setVelocityY(-330); //alors vitesse verticale négative
             //(on saute)
         }
+        
     }
 
     </script>
