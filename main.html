@@ -93,13 +93,8 @@
 
         cursors = this.input.keyboard.createCursorKeys();
         this.physics.add.collider(player, calque_contour);
-        this.physics.add.collider(player, calque_Plateforme);
-
+        
     }
-
-
-
-
 
     function update(){
         if (gameOver){return;}
@@ -115,7 +110,7 @@
             player.setVelocityX(0); //vitesse nulle
             player.anims.play('turn'); //animation fait face caméra
         }
-        if (cursors.up.isDown && player.body.touching.down){
+        if (cursors.up.isDown && player.body.blocked.down){
             //si touche haut appuyée ET que le perso touche le sol
             player.setVelocityY(-330); //alors vitesse verticale négative
             //(on saute)
@@ -123,15 +118,6 @@
     }
 
     </script>
-
-
-
-
-
-
-
-
-
 
 
 </body>
