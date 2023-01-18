@@ -22,6 +22,7 @@
 
         new Phaser.Game(config);
         function preload(){
+            //Preload Background + Second Plan
             this.load.image('Foret', 'assets/BackgroundForet.png');
             this.load.image('BackgroundGrotte', 'assets/BackgroundGrotte.png');
             this.load.image('BackgroundDonjon', 'assets/BackgroundDonjon.png');
@@ -29,6 +30,7 @@
             this.load.image('SecondPlanGrotte', 'assets/SecondPlanGrotte.png');
             this.load.image('SecondPlanDonjon', 'assets/SecondPlanDonjon.png');
 
+            //Preload
             this.load.image("Phaser_tuilesdejeu", "assets/TilesetFinal.png")
             this.load.tilemapTiledJSON("carte", "assets/Level1.json")
             this.load.spritesheet('perso','assets/perso.png',
@@ -42,7 +44,7 @@
     var gameOver = false;
   
     function create(){
-        //Affichage backgound + 1er plan
+        //Affichage backgound + Second Plan
         this.add.image(800, 800, 'Foret');
         this.add.image(800,800, 'BackgroundGrotte');
         this.add.image(800,800, 'BackgroundDonjon');
@@ -107,13 +109,15 @@
         });
 
         cursors = this.input.keyboard.createCursorKeys();
+
+        // Ajout Physique entre Perso et Monde
         this.physics.add.collider(player, calque_contour);
 
-        // redimentionnement du monde avec les dimensions calculées via tiled
+        // Redimension du Monde
         this.physics.world.setBounds(0, 0, 1600, 1600);
-        //  ajout du champs de la caméra de taille identique à celle du monde
+        //  Creation de la Camera
         this.cameras.main.setBounds(0, 0, 1600, 1600);
-        // ancrage de la caméra sur le joueur
+        // Ancrage de la Camera
         this.cameras.main.startFollow(player);  
         
         
