@@ -113,7 +113,6 @@
         //Recuperation Controle Clavier
         cursors = this.input.keyboard.createCursorKeys();
         //Activation Manette
-        console.log(this.input)
         this.input.gamepad.once('connected', function (pad) {
             controller = pad;
         });
@@ -168,6 +167,7 @@
                 walljump = false;
                 setTimeout(cdWallJump, 500);
                 player.setVelocityY(-210);
+                player.setVelocityX(-1000);
             }
         }
         if (cursors.up.isDown && player.body.blocked.left || controller.up && player.body.blocked.left) {
@@ -175,6 +175,7 @@
                 walljump = false;
                 setTimeout(cdWallJump, 500);
                 player.setVelocityY(-210);
+                player.setVelocityX(1000);
             }
         }
     }
