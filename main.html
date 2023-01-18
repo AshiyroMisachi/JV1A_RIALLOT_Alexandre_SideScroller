@@ -22,10 +22,18 @@
 
         new Phaser.Game(config);
         function preload(){
+            this.load.image('Foret', 'assets/BackgroundForet.png');
+            this.load.image('BackgroundGrotte', 'assets/BackgroundGrotte.png');
+            this.load.image('BackgroundDonjon', 'assets/BackgroundDonjon.png');
+            this.load.image('SecondPlanForet', 'assets/SecondPlanForet.png');
+            this.load.image('SecondPlanGrotte', 'assets/SecondPlanGrotte.png');
+            this.load.image('SecondPlanDonjon', 'assets/SecondPlanDonjon.png');
+
             this.load.image("Phaser_tuilesdejeu", "assets/TilesetFinal.png")
             this.load.tilemapTiledJSON("carte", "assets/Level1.json")
             this.load.spritesheet('perso','assets/perso.png',
             { frameWidth: 32, frameHeight: 48 });
+
         }
 
     var player;
@@ -34,6 +42,15 @@
     var gameOver = false;
   
     function create(){
+        //Affichage backgound + 1er plan
+        this.add.image(800, 800, 'Foret');
+        this.add.image(800,800, 'BackgroundGrotte');
+        this.add.image(800,800, 'BackgroundDonjon');
+        this.add.image(800, 800, 'SecondPlanForet');
+        this.add.image(800, 800, 'SecondPlanGrotte');
+        this.add.image(800, 800, 'SecondPlanDonjon');
+
+
         //Chargement de la carte
         const carteDuNiveau = this.add.tilemap("carte");
 
@@ -118,7 +135,7 @@
         }
         if (cursors.up.isDown ){
             //si touche haut appuyée ET que le perso touche le sol
-            player.setVelocityY(-330); //alors vitesse verticale négative
+            player.setVelocityY(-600); //alors vitesse verticale négative
             //(on saute)
         }
         
