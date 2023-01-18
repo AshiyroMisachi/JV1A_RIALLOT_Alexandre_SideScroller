@@ -335,6 +335,9 @@
   <properties>
    <property name="estSolide" type="bool" value="true"/>
   </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="0" width="32" height="6"/>
+  </objectgroup>
  </tile>
  <tile id="352">
   <properties>

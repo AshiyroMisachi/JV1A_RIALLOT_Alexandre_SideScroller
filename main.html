@@ -15,8 +15,9 @@
                     default: 'arcade',
                     arcade: {
                     gravity: { y: 300 },
-                    debug: false
+                    debug: false,
                 }},
+            input:{gamepad:true},
             scene: {preload: preload, create: create, update: update }
         };
 
@@ -31,8 +32,9 @@
             this.load.image('SecondPlanDonjon', 'assets/SecondPlanDonjon.png');
 
             //Preload
-            this.load.image("Phaser_tuilesdejeu", "assets/TilesetFinal.png")
-            this.load.tilemapTiledJSON("carte", "assets/Level1.json")
+            this.load.image('WallJumpUp', 'assets/MantisClaw.png');
+            this.load.image("Phaser_tuilesdejeu", "assets/TilesetFinal.png");
+            this.load.tilemapTiledJSON("carte", "assets/Level1.json");
             this.load.spritesheet('perso','assets/perso.png',
             { frameWidth: 32, frameHeight: 48 });
 
@@ -42,6 +44,9 @@
     var cursors;
     var plateformes;
     var gameOver = false;
+    var controller = false;
+    var walljump = false;
+    var powerUp;
   
     function create(){
         //Affichage backgound + Second Plan
@@ -86,9 +91,7 @@
 
         //creation perso
         player = this.physics.add.sprite(800, 1472, 'perso');
-        player.setBounce(0.2);
         player.setCollideWorldBounds(true);
-        this.physics.add.collider(player, plateformes);
 
         this.anims.create({
             key: 'left',
@@ -107,11 +110,17 @@
             frameRate: 10,
             repeat: -1
         });
-
+        //Recuperation Controle Clavier
         cursors = this.input.keyboard.createCursorKeys();
+        //Activation Manette
+        console.log(this.input)
+        this.input.gamepad.once('connected', function (pad) {
+            controller = pad;
+        });
 
         // Ajout Physique entre Perso et Monde
         this.physics.add.collider(player, calque_contour);
+        this.physics.add.collider(player, calque_Plateforme);
 
         // Redimension du Monde
         this.physics.world.setBounds(0, 0, 1600, 1600);
@@ -119,34 +128,67 @@
         this.cameras.main.setBounds(0, 0, 1600, 1600);
         // Ancrage de la Camera
         this.cameras.main.startFollow(player);  
-        
+
+        //Aparition PowerUp
+        powerUp = this.physics.add.group();
+        this.physics.add.collider(powerUp , calque_contour);
+        this.physics.add.overlap(player, powerUp, unlockWallJump, null, this);
+
+        powerUp.create(900, 1472, 'WallJumpUp').setScale(0.065);
         
     }
-
+    
     function update(){
         if (gameOver){return;}
-        if (cursors.left.isDown){ //si la touche gauche est appuyée
-            player.setVelocityX(-160); //alors vitesse négative en X
-            player.anims.play('left', true); //et animation => gauche
+
+        // Mouvement du joueur
+        //Gauche
+        if (cursors.left.isDown || controller.left ){ 
+            player.setVelocityX(-160); 
+            player.anims.play('left', true); 
         }
-        else if (cursors.right.isDown){ //sinon si la touche droite est appuyée
-            player.setVelocityX(160); //alors vitesse positive en X
-            player.anims.play('right', true); //et animation => droite
+        // Droite 
+        else if (cursors.right.isDown || controller.right){ 
+            player.setVelocityX(160); 
+            player.anims.play('right', true); 
         }
-        else{ // sinon
-            player.setVelocityX(0); //vitesse nulle
-            player.anims.play('turn'); //animation fait face caméra
+        // Immobile
+        else{ 
+            player.setVelocityX(0); 
+            player.anims.play('turn'); 
         }
-        if (cursors.up.isDown ){
-            //si touche haut appuyée ET que le perso touche le sol
-            player.setVelocityY(-600); //alors vitesse verticale négative
-            //(on saute)
+        // Saut
+        if (cursors.up.isDown && player.body.blocked.down ||  controller.up && player.body.blocked.down){
+            player.setVelocityY(-210); 
         }
         
+        //Wall Jump
+        if (cursors.up.isDown && player.body.blocked.right || controller.up && player.body.blocked.right) {
+            if (walljump == true) {
+                walljump = false;
+                setTimeout(cdWallJump, 500);
+                player.setVelocityY(-210);
+            }
+        }
+        if (cursors.up.isDown && player.body.blocked.left || controller.up && player.body.blocked.left) {
+            if (walljump == true) {
+                walljump = false;
+                setTimeout(cdWallJump, 500);
+                player.setVelocityY(-210);
+            }
+        }
+    }
+
+    function unlockWallJump(player, powerUp) {
+        powerUp.disableBody(true,true);
+        walljump = true
+    }
+
+    function cdWallJump() {
+        walljump = true;
+
     }
 
     </script>
-
-
 </body>
 </html>
