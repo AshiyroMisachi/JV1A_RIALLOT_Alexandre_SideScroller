@@ -87,10 +87,10 @@
             tileset
         );
 
-        objetPlateforme = this.physics.add.group();
+        plateforme = this.physics.add.group();
         calque_ObjetPlateforme = carteDuNiveau.getObjectLayer('ObjetPlateforme');
-        calque_ObjetPlateforme.objetcs.forEach( calque_ObjetPlateforme => {
-            const ObjetPlateforme = objetPlateforme.create( calque_ObjetPlateforme.x, calque_ObjetPlateforme.y, 'TexturePlateforme').body.setAllowGravity(false);
+        calque_ObjetPlateforme.objects.forEach( calque_ObjetPlateforme => {
+            const POPlateforme = plateforme.create( calque_ObjetPlateforme.x + 16, calque_ObjetPlateforme.y + 3, "TexturePlateforme").body.setAllowGravity(false).setImmovable(true);
         });
 
         //definition des tuiles de plateformes solides
@@ -139,6 +139,7 @@
         powerUp = this.physics.add.group();
         this.physics.add.collider(powerUp , calque_contour);
         this.physics.add.overlap(player, powerUp, unlockWallJump, null, this);
+        this.physics.add.collider(player, plateforme);
 
         powerUp.create(900, 1472, 'WallJumpUp').setScale(0.065);
         
