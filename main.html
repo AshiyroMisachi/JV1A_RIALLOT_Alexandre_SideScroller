@@ -30,6 +30,7 @@
             this.load.image('SecondPlanForet', 'assets/SecondPlanForet.png');
             this.load.image('SecondPlanGrotte', 'assets/SecondPlanGrotte.png');
             this.load.image('SecondPlanDonjon', 'assets/SecondPlanDonjon.png');
+            this.load.image('TexturePlateforme', 'assets/TexturePlateforme.png');
 
             //Preload
             this.load.image('WallJumpUp', 'assets/MantisClaw.png');
@@ -37,6 +38,8 @@
             this.load.tilemapTiledJSON("carte", "assets/Level1.json");
             this.load.spritesheet('perso','assets/perso.png',
             { frameWidth: 32, frameHeight: 48 });
+
+            
 
         }
 
@@ -84,10 +87,14 @@
             tileset
         );
 
+        objetPlateforme = this.physics.add.group();
+        calque_ObjetPlateforme = carteDuNiveau.getObjectLayer('ObjetPlateforme');
+        calque_ObjetPlateforme.objetcs.forEach( calque_ObjetPlateforme => {
+            const ObjetPlateforme = objetPlateforme.create( calque_ObjetPlateforme.x, calque_ObjetPlateforme.y, 'TexturePlateforme').body.setAllowGravity(false);
+        });
 
         //definition des tuiles de plateformes solides
         calque_contour.setCollisionByProperty ({ estSolide: true });
-        calque_Plateforme.setCollisionByProperty ({ estSolide: true });
 
         //creation perso
         player = this.physics.add.sprite(800, 1472, 'perso');
