@@ -30,12 +30,24 @@
             this.load.image('SecondPlanForet', 'assets/SecondPlanForet.png');
             this.load.image('SecondPlanGrotte', 'assets/SecondPlanGrotte.png');
             this.load.image('SecondPlanDonjon', 'assets/SecondPlanDonjon.png');
-            this.load.image('TexturePlateforme', 'assets/TexturePlateforme.png');
 
-            //Preload
+            //Preload Texture Objet
+            this.load.image('TexturePlateformeForet', 'assets/TexturePlateformeForet.png');
+            this.load.image('TexturePlateformeBois', 'assets/TexturePlateformeBois.png');
+            this.load.image('TexturePlateformeGrotte', 'assets/TexturePlateformeGrotte.png');
+            this.load.image('TexturePlateformeDonjon', 'assets/TexturePlateformeDonjon.png');
+
+            this.load.image('TexturePointeHaut', 'assets/TexturePointeHaut.png');
+            this.load.image('TexturePointeDroite', 'assets/TexturePointeDroite.png');
+            this.load.image('TexturePointeGauche', 'assets/TexturePointeGauche.png');
+
             this.load.image('WallJumpUp', 'assets/MantisClaw.png');
+
+            //Preload Map Tiled
             this.load.image("Phaser_tuilesdejeu", "assets/TilesetFinal.png");
             this.load.tilemapTiledJSON("carte", "assets/Level1.json");
+
+            //Preload Perso
             this.load.spritesheet('perso','assets/perso.png',
             { frameWidth: 32, frameHeight: 48 });
 
@@ -88,14 +100,53 @@
             tileset
         );
 
-        plateforme = this.physics.add.group();
-        calque_ObjetPlateforme = carteDuNiveau.getObjectLayer('ObjetPlateforme');
-        calque_ObjetPlateforme.objects.forEach( calque_ObjetPlateforme => {
-            const POPlateforme = plateforme.create( calque_ObjetPlateforme.x + 16, calque_ObjetPlateforme.y + 3, "TexturePlateforme").body.setAllowGravity(false).setImmovable(true);
+        //Création des Plateformes
+        plateforme_foret = this.physics.add.group();
+        calque_ObjetPlateformeForet = carteDuNiveau.getObjectLayer('ObjetPlateformeForet');
+        calque_ObjetPlateformeForet.objects.forEach( calque_ObjetPlateformeForet => {
+            const POPlateformeForet = plateforme_foret.create( calque_ObjetPlateformeForet.x + 16, calque_ObjetPlateformeForet.y + 3, "TexturePlateformeForet").body.setAllowGravity(false).setImmovable(true);
+        });
+
+        plateforme_bois = this.physics.add.group();
+        calque_ObjetPlateformeBois = carteDuNiveau.getObjectLayer('ObjetPlateformeBois');
+        calque_ObjetPlateformeBois.objects.forEach( calque_ObjetPlateformeBois => {
+            const POPlateformeBois = plateforme_bois.create( calque_ObjetPlateformeBois.x + 16, calque_ObjetPlateformeBois.y + 3, "TexturePlateformeBois").body.setAllowGravity(false).setImmovable(true);
+        });
+        
+        plateforme_grotte = this.physics.add.group();
+        calque_ObjetPlateformeGrotte = carteDuNiveau.getObjectLayer('ObjetPlateformeGrotte');
+        calque_ObjetPlateformeGrotte.objects.forEach( calque_ObjetPlateformeGrotte => {
+            const POPlateformeGrotte = plateforme_grotte.create( calque_ObjetPlateformeGrotte.x + 16, calque_ObjetPlateformeGrotte.y + 3, "TexturePlateformeGrotte").body.setAllowGravity(false).setImmovable(true);
+        });
+
+        plateforme_donjon = this.physics.add.group();
+        calque_ObjetPlateformeDonjon = carteDuNiveau.getObjectLayer('ObjetPlateformeDonjon');
+        calque_ObjetPlateformeDonjon.objects.forEach( calque_ObjetPlateformeDonjon => {
+            const POPlateformeDonjon = plateforme_donjon.create( calque_ObjetPlateformeDonjon.x + 16, calque_ObjetPlateformeDonjon.y + 3, "TexturePlateformeDonjon").body.setAllowGravity(false).setImmovable(true);
+        });
+
+        //Création des Pointes
+        pointe_haut = this.physics.add.group();
+        calque_ObjetPointeHaut = carteDuNiveau.getObjectLayer('ObjetPointeHaut');
+        calque_ObjetPointeHaut.objects.forEach( calque_ObjetPointeHaut => {
+            const POPointeHaut = pointe_haut.create( calque_ObjetPointeHaut.x + 16, calque_ObjetPointeHaut.y + 16, "TexturePointeHaut").body.setAllowGravity(false);
+        });
+
+        pointe_droite = this.physics.add.group();
+        calque_ObjetPointeDroite = carteDuNiveau.getObjectLayer('ObjetPointeDroite');
+        calque_ObjetPointeDroite.objects.forEach( calque_ObjetPointeDroite => {
+            const POPointeDroite = pointe_droite.create( calque_ObjetPointeDroite.x + 16, calque_ObjetPointeDroite.y + 16, "TexturePointeDroite").body.setAllowGravity(false);
+        });
+
+        pointe_gauche = this.physics.add.group();
+        calque_ObjetPointeGauche = carteDuNiveau.getObjectLayer('ObjetPointeGauche');
+        calque_ObjetPointeGauche.objects.forEach( calque_ObjetPointeGauche => {
+            const POPointeGauche = pointe_gauche.create( calque_ObjetPointeGauche.x + 16, calque_ObjetPointeGauche.y + 16, "TexturePointeGauche").body.setAllowGravity(false);
         });
 
         //definition des tuiles de plateformes solides
         calque_contour.setCollisionByProperty ({ estSolide: true });
+
 
         //creation perso
         player = this.physics.add.sprite(800, 1472, 'perso');
@@ -143,9 +194,15 @@
 
         //Création Collision
         this.physics.add.collider(powerUp , calque_contour);
+
         this.physics.add.overlap(player, powerUp, unlockWallJump, null, this);
-        this.physics.add.collider(player, plateforme);
-        //this.physics.add.overlap(player, calque_Pointe, mortPointe, null, this);
+
+        this.physics.add.collider(player, plateforme_bois);
+        this.physics.add.collider(player, plateforme_donjon);
+        this.physics.add.collider(player, plateforme_foret);
+        this.physics.add.collider(player, plateforme_grotte);
+
+        this.physics.add.overlap(player, pointe_haut, mortPointe, null, this);
   
     }
     
