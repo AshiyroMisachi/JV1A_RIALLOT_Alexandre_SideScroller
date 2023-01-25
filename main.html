@@ -203,6 +203,8 @@
         this.physics.add.collider(player, plateforme_grotte);
 
         this.physics.add.overlap(player, pointe_haut, mortPointe, null, this);
+        this.physics.add.overlap(player, pointe_droite, mortPointe, null, this);
+        this.physics.add.overlap(player, pointe_gauche, mortPointe, null, this);
   
     }
     
