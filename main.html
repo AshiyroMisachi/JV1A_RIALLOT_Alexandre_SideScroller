@@ -50,6 +50,7 @@
     var controller = false;
     var walljump = false;
     var powerUp;
+    var gameOver = false;
   
     function create(){
         //Affichage backgound + Second Plan
@@ -137,16 +138,18 @@
 
         //Aparition PowerUp
         powerUp = this.physics.add.group();
+        powerUp.create(900, 1472, 'WallJumpUp').setScale(0.065);
+
+
+        //Création Collision
         this.physics.add.collider(powerUp , calque_contour);
         this.physics.add.overlap(player, powerUp, unlockWallJump, null, this);
         this.physics.add.collider(player, plateforme);
-
-        powerUp.create(900, 1472, 'WallJumpUp').setScale(0.065);
-        
+        //this.physics.add.overlap(player, calque_Pointe, mortPointe, null, this);
+  
     }
     
     function update(){
-        if (gameOver){return;}
 
         // Mouvement du joueur
         //Gauche
@@ -196,6 +199,13 @@
     function cdWallJump() {
         walljump = true;
 
+    }
+
+    function mortPointe(player, calque_Pointe) {
+        console.log("Tmort");
+        this.physics.pause();
+        player.setTint(0xff0000);
+        player.anims.play('turn');
     }
 
     </script>
