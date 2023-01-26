@@ -15,7 +15,7 @@
                     default: 'arcade',
                     arcade: {
                     gravity: { y: 300 },
-                    debug: false,
+                    debug: false
                 }},
             input:{gamepad:true},
             scene: {preload: preload, create: create, update: update }
@@ -44,6 +44,9 @@
             this.load.image('TextureRalentisseur', 'assets/TextureRalentisseur.png');
 
             this.load.image('WallJumpUp', 'assets/MantisClaw.png');
+
+            //Preload Texture Ennemi
+            this.load.image('TextureBat', 'assets/Bat.png');
 
             //Preload Map Tiled
             this.load.image("Phaser_tuilesdejeu", "assets/TilesetFinal.png");
@@ -144,6 +147,21 @@
             const PORalentisseur = ralentisseur.create( calque_ObjetRalentisseur.x + 16, calque_ObjetRalentisseur.y + 15, "TextureRalentisseur").body.setAllowGravity(false).setImmovable(true);
         });
 
+        //Création Ennemi Horizontal
+        bat = this.physics.add.group();
+        calque_EnnemiHorizontal = carteDuNiveau.getObjectLayer('EnnemiHorizontal');
+        calque_EnnemiHorizontal.objects.forEach( calque_EnnemiHorizontal => {
+            const EEnnemiHorizontal = bat.create( calque_EnnemiHorizontal.x + 16, calque_EnnemiHorizontal.y + 16, "TextureBat").body.setAllowGravity(false).setBounce(1).setImmovable(true);
+        });
+        bat.setVelocity(0, 200);
+
+        //Création des Bordures délimitant les déplacements des Ennemis
+        bordure_ennemi = this.physics.add.group();
+        calque_BordureEnnemi = carteDuNiveau.getObjectLayer('BordureEnnemi');
+        calque_BordureEnnemi.objects.forEach( calque_BordureEnnemi => {
+            const EBordureEnnemi = bordure_ennemi.create( calque_BordureEnnemi.x + 16, calque_BordureEnnemi.y +16, "TextureRalentisseur").body.setAllowGravity(false).setImmovable(true);
+        });
+
         //definition des tuiles de plateformes solides
         calque_contour.setCollisionByProperty ({ estSolide: true });
 
@@ -189,10 +207,14 @@
         //Aparition PowerUp
         powerUp = this.physics.add.group();
         powerUp.create(900, 1472, 'WallJumpUp').setScale(0.065);
+        
 
+        //Création Collision Player
+        this.physics.add.collider(player, calque_contour, notRalentisseur, null, this);
+        this.physics.add.overlap(player, bat, collisionEnnemi, null, this);
 
         //Création Collision Objet
-        this.physics.add.collider(powerUp , calque_contour, notRalentisseur, null, this);
+        this.physics.add.collider(powerUp , calque_contour);
 
         this.physics.add.overlap(player, powerUp, unlockWallJump, null, this);
 
@@ -206,6 +228,10 @@
         this.physics.add.overlap(player, pointe_gauche, mortPointe, null, this);
 
         this.physics.add.collider(player, ralentisseur, onRalentisseur, null, this);
+
+        //Colision ennemi
+        this.physics.add.collider(bat, calque_contour);
+        this.physics.add.collider(bat, bordure_ennemi);
 
         //Création barre de vie
         /*let healthbar = makeBar(140, 100, 0x2980b9);
@@ -301,6 +327,11 @@
 
     function notRalentisseur() {
         surRalentisseur = false;
+    }
+
+    function collisionEnnemi(player, bat) {
+        console.log("paf");
+        bat.disableBody(true, true);
     }
 
     //Création Barre de Vie

@@ -356,7 +356,7 @@
                 }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":true,
+         "visible":false,
          "x":0,
          "y":0
         }, 
@@ -2054,9 +2054,97 @@
          "visible":false,
          "x":0,
          "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":33,
+         "name":"EnnemiHorizontal",
+         "objects":[
+                {
+                 "class":"",
+                 "height":32,
+                 "id":314,
+                 "name":"",
+                 "rotation":0,
+                 "visible":true,
+                 "width":32,
+                 "x":960,
+                 "y":1344
+                }, 
+                {
+                 "class":"",
+                 "height":32,
+                 "id":315,
+                 "name":"",
+                 "rotation":0,
+                 "visible":true,
+                 "width":32,
+                 "x":1248,
+                 "y":1344
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":34,
+         "name":"BordureEnnemi",
+         "objects":[
+                {
+                 "class":"",
+                 "height":32,
+                 "id":316,
+                 "name":"",
+                 "rotation":0,
+                 "visible":true,
+                 "width":32,
+                 "x":960,
+                 "y":1280
+                }, 
+                {
+                 "class":"",
+                 "height":32,
+                 "id":318,
+                 "name":"",
+                 "rotation":0,
+                 "visible":true,
+                 "width":32,
+                 "x":1248,
+                 "y":1312
+                }, 
+                {
+                 "class":"",
+                 "height":32,
+                 "id":319,
+                 "name":"",
+                 "rotation":0,
+                 "visible":true,
+                 "width":32,
+                 "x":1248,
+                 "y":1536
+                }, 
+                {
+                 "class":"",
+                 "height":32,
+                 "id":320,
+                 "name":"",
+                 "rotation":0,
+                 "visible":true,
+                 "width":32,
+                 "x":960,
+                 "y":1536
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
         }],
- "nextlayerid":33,
- "nextobjectid":314,
+ "nextlayerid":35,
+ "nextobjectid":321,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.9.2",

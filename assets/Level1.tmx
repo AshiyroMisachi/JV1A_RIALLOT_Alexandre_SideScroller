@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="33" nextobjectid="314">
+<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="34" nextobjectid="316">
  <editorsettings>
   <export target="Level1.json" format="json"/>
  </editorsettings>
@@ -246,5 +246,9 @@
   <object id="305" x="1120" y="1504" width="32" height="32"/>
   <object id="306" x="1152" y="1504" width="32" height="32"/>
   <object id="307" x="1184" y="1504" width="32" height="32"/>
+ </objectgroup>
+ <objectgroup id="33" name="EnnemiHorizontal">
+  <object id="314" x="960" y="1344" width="32" height="32"/>
+  <object id="315" x="1248" y="1344" width="32" height="32"/>
  </objectgroup>
 </map>
