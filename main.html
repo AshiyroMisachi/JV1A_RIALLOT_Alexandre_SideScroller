@@ -66,7 +66,7 @@
     var powerUp;
     var gameOver = false;
     var surRalentisseur = false;
-  
+
     function create(){
         //Affichage backgound + Second Plan
         this.add.image(800, 800, 'Foret');
@@ -208,6 +208,9 @@
         this.physics.add.collider(player, ralentisseur, onRalentisseur, null, this);
 
         //Création barre de vie
+        /*let healthbar = makeBar(140, 100, 0x2980b9);
+        setValue(healtbar, 100);*/
+
     }
     
     function update(){
@@ -299,6 +302,22 @@
     function notRalentisseur() {
         surRalentisseur = false;
     }
+
+    //Création Barre de Vie
+    /*function makeBar(x, y, color) {
+        let bar = this.add.graphics();
+        bar.fillStyle(color, 1)
+        bar.fillRect(0, 0, 200, 50);
+        bar.x =x;
+        bar.y = y;
+
+        return bar;
+    }
+
+    function setValue(bar, percentage) {
+        bar.scaleX = percentage/100;
+    }*/
+
     </script>
 </body>
 </html>
