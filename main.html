@@ -41,6 +41,8 @@
             this.load.image('TexturePointeDroite', 'assets/TexturePointeDroite.png');
             this.load.image('TexturePointeGauche', 'assets/TexturePointeGauche.png');
 
+            this.load.image('TextureRalentisseur', 'assets/TextureRalentisseur.png');
+
             this.load.image('WallJumpUp', 'assets/MantisClaw.png');
 
             //Preload Map Tiled
@@ -63,6 +65,7 @@
     var walljump = false;
     var powerUp;
     var gameOver = false;
+    var surRalentisseur = false;
   
     function create(){
         //Affichage backgound + Second Plan
@@ -85,16 +88,6 @@
 
         //Chargement des calques
         
-        const calque_Pointe = carteDuNiveau.createLayer (
-            "Pointe",
-            tileset
-        );
-
-        const calque_Plateforme = carteDuNiveau.createLayer (
-            "Plateforme",
-            tileset
-        );
-
         const calque_contour = carteDuNiveau.createLayer (
             "Contour",
             tileset
@@ -144,6 +137,13 @@
             const POPointeGauche = pointe_gauche.create( calque_ObjetPointeGauche.x + 16, calque_ObjetPointeGauche.y + 16, "TexturePointeGauche").body.setAllowGravity(false);
         });
 
+        //Création Ralentisseur
+        ralentisseur = this.physics.add.group();
+        calque_ObjetRalentisseur = carteDuNiveau.getObjectLayer('ObjetRalentisseur');
+        calque_ObjetRalentisseur.objects.forEach( calque_ObjetRalentisseur => {
+            const PORalentisseur = ralentisseur.create( calque_ObjetRalentisseur.x + 16, calque_ObjetRalentisseur.y + 15, "TextureRalentisseur").body.setAllowGravity(false).setImmovable(true);
+        });
+
         //definition des tuiles de plateformes solides
         calque_contour.setCollisionByProperty ({ estSolide: true });
 
@@ -178,7 +178,6 @@
 
         // Ajout Physique entre Perso et Monde
         this.physics.add.collider(player, calque_contour);
-        this.physics.add.collider(player, calque_Plateforme);
 
         // Redimension du Monde
         this.physics.world.setBounds(0, 0, 1600, 1600);
@@ -192,31 +191,40 @@
         powerUp.create(900, 1472, 'WallJumpUp').setScale(0.065);
 
 
-        //Création Collision
-        this.physics.add.collider(powerUp , calque_contour);
+        //Création Collision Objet
+        this.physics.add.collider(powerUp , calque_contour, notRalentisseur, null, this);
 
         this.physics.add.overlap(player, powerUp, unlockWallJump, null, this);
 
-        this.physics.add.collider(player, plateforme_bois);
-        this.physics.add.collider(player, plateforme_donjon);
-        this.physics.add.collider(player, plateforme_foret);
-        this.physics.add.collider(player, plateforme_grotte);
+        this.physics.add.collider(player, plateforme_bois, notRalentisseur, null, this);
+        this.physics.add.collider(player, plateforme_donjon, notRalentisseur, null, this);
+        this.physics.add.collider(player, plateforme_foret, notRalentisseur, null, this);
+        this.physics.add.collider(player, plateforme_grotte, notRalentisseur, null, this);
 
         this.physics.add.overlap(player, pointe_haut, mortPointe, null, this);
         this.physics.add.overlap(player, pointe_droite, mortPointe, null, this);
         this.physics.add.overlap(player, pointe_gauche, mortPointe, null, this);
-  
+
+        this.physics.add.collider(player, ralentisseur, onRalentisseur, null, this);
     }
     
     function update(){
 
         // Mouvement du joueur
         //Gauche
-        if (cursors.left.isDown || controller.left ){ 
+        if (cursors.left.isDown && surRalentisseur == true || controller.left && surRalentisseur == true) {
+            player.setVelocityX(-80);
+            player.anims.play('left', true);
+        }
+        else if (cursors.left.isDown || controller.left ){ 
             player.setVelocityX(-160); 
             player.anims.play('left', true); 
         }
         // Droite 
+        else if (cursors.right.isDown && surRalentisseur == true || controller.right && surRalentisseur == true) {
+            player.setVelocityX(80);
+            player.anims.play('right', true)
+        }
         else if (cursors.right.isDown || controller.right){ 
             player.setVelocityX(160); 
             player.anims.play('right', true); 
@@ -227,17 +235,30 @@
             player.anims.play('turn'); 
         }
         // Saut
-        if (cursors.up.isDown && player.body.blocked.down ||  controller.up && player.body.blocked.down){
+        if (cursors.up.isDown && player.body.blocked.down && surRalentisseur == true || controller.up && player.body.blocked.down && surRalentisseur == true) {
+            player.setVelocityY(-105);
+        }
+        else if (cursors.up.isDown && player.body.blocked.down ||  controller.up && player.body.blocked.down){
             player.setVelocityY(-210); 
         }
         
         //Wall Jump
-        if (cursors.up.isDown && player.body.blocked.right || controller.up && player.body.blocked.right) {
+        if (cursors.up.isDown && player.body.blocked.right && surRalentisseur == true|| controller.up && player.body.blocked.right && surRalentisseur == true) {
+            if (walljump == true) {
+                walljump = false;
+                setTimeout(cdWallJump, 500);
+                player.setVelocityY(-105);
+                player.setVelocityX(-500);
+                cursors.right.enabled = true;
+            }
+        }
+        else if (cursors.up.isDown && player.body.blocked.right || controller.up && player.body.blocked.right) {
             if (walljump == true) {
                 walljump = false;
                 setTimeout(cdWallJump, 500);
                 player.setVelocityY(-210);
                 player.setVelocityX(-1000);
+                cursors.right.enabled = true;
             }
         }
         if (cursors.up.isDown && player.body.blocked.left || controller.up && player.body.blocked.left) {
@@ -250,6 +271,7 @@
         }
     }
 
+    // Gestion du Wall Jump
     function unlockWallJump(player, powerUp) {
         powerUp.disableBody(true,true);
         walljump = true
@@ -257,15 +279,25 @@
 
     function cdWallJump() {
         walljump = true;
-
     }
 
-    function mortPointe(player, calque_Pointe) {
+    // Gestion de la mort du personnage avec les pointes
+    function mortPointe(player) {
         console.log("Tmort");
         this.physics.pause();
         player.setTint(0xff0000);
         player.anims.play('turn');
     }
+
+    //Gestion du ralentissement sur les ralentisseurs
+    function onRalentisseur() {
+        surRalentisseur = true;
+    }
+
+    function notRalentisseur() {
+        surRalentisseur = false;
+    }
+
 
     </script>
 </body>
