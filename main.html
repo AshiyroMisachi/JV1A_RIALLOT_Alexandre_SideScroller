@@ -206,6 +206,8 @@
         this.physics.add.overlap(player, pointe_gauche, mortPointe, null, this);
 
         this.physics.add.collider(player, ralentisseur, onRalentisseur, null, this);
+
+        //Création barre de vie
     }
     
     function update(){
@@ -297,8 +299,6 @@
     function notRalentisseur() {
         surRalentisseur = false;
     }
-
-
     </script>
 </body>
 </html>
