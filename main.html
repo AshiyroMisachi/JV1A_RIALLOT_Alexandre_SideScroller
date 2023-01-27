@@ -15,7 +15,7 @@
                     default: 'arcade',
                     arcade: {
                     gravity: { y: 300 },
-                    debug: false
+                    debug: true
                 }},
             input:{gamepad:true},
             scene: {preload: preload, create: create, update: update }
@@ -42,6 +42,8 @@
             this.load.image('TexturePointeGauche', 'assets/TexturePointeGauche.png');
 
             this.load.image('TextureRalentisseur', 'assets/TextureRalentisseur.png');
+
+            this.load.image('TextureBordureEnnemi', 'assets/TextureBordureEnnemi.png');
 
             this.load.image('WallJumpUp', 'assets/MantisClaw.png');
 
@@ -151,7 +153,7 @@
         bat = this.physics.add.group();
         calque_EnnemiHorizontal = carteDuNiveau.getObjectLayer('EnnemiHorizontal');
         calque_EnnemiHorizontal.objects.forEach( calque_EnnemiHorizontal => {
-            const EEnnemiHorizontal = bat.create( calque_EnnemiHorizontal.x + 16, calque_EnnemiHorizontal.y + 16, "TextureBat").body.setAllowGravity(false).setBounce(1).setImmovable(true);
+            const EEnnemiHorizontal = bat.create( calque_EnnemiHorizontal.x + 16, calque_EnnemiHorizontal.y + 16, "TextureBat").body.setAllowGravity(false).setBounce(1);
         });
         bat.setVelocity(0, 200);
 
@@ -159,12 +161,11 @@
         bordure_ennemi = this.physics.add.group();
         calque_BordureEnnemi = carteDuNiveau.getObjectLayer('BordureEnnemi');
         calque_BordureEnnemi.objects.forEach( calque_BordureEnnemi => {
-            const EBordureEnnemi = bordure_ennemi.create( calque_BordureEnnemi.x + 16, calque_BordureEnnemi.y +16, "TextureRalentisseur").body.setAllowGravity(false).setImmovable(true);
+            const EBordureEnnemi = bordure_ennemi.create( calque_BordureEnnemi.x + 16, calque_BordureEnnemi.y +16, "TextureBordureEnnemi").body.setAllowGravity(false).setImmovable(true);
         });
 
         //definition des tuiles de plateformes solides
         calque_contour.setCollisionByProperty ({ estSolide: true });
-
 
         //creation perso
         player = this.physics.add.sprite(800, 1472, 'perso');
@@ -231,7 +232,7 @@
 
         //Colision ennemi
         this.physics.add.collider(bat, calque_contour);
-        this.physics.add.collider(bat, bordure_ennemi);
+        this.physics.add.collider(bat, bordure_ennemi, verification, null, this);
 
         //Création barre de vie
         /*let healthbar = makeBar(140, 100, 0x2980b9);
@@ -301,6 +302,13 @@
             }
         }
     }
+
+    // FONCTION RANDOM VERIFICATION
+
+    function verification() {
+        console.log("Je vérifie, je vérifie");
+    }
+
 
     // Gestion du Wall Jump
     function unlockWallJump(player, powerUp) {
