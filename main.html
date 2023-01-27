@@ -155,7 +155,7 @@
         calque_EnnemiHorizontal.objects.forEach( calque_EnnemiHorizontal => {
             const EEnnemiHorizontal = bat.create( calque_EnnemiHorizontal.x + 16, calque_EnnemiHorizontal.y + 16, "TextureBat").body.setAllowGravity(false).setBounce(1);
         });
-        bat.setVelocity(0, 200);
+        bat.setVelocity(0, 150);
 
         //Création des Bordures délimitant les déplacements des Ennemis
         bordure_ennemi = this.physics.add.group();
