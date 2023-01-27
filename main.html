@@ -21,7 +21,7 @@
             scene: {preload: preload, create: create, update: update }
         };
 
-        new Phaser.Game(config);
+        game = new Phaser.Game(config);
         function preload(){
             //Preload Background + Second Plan
             this.load.image('Foret', 'assets/BackgroundForet.png');
@@ -58,8 +58,10 @@
             this.load.spritesheet('perso','assets/perso.png',
             { frameWidth: 32, frameHeight: 48 });
 
-            
-
+            //Preload barre de vie
+            this.load.image('CadreVie', 'assets/CadreVie.png');
+            this.load.image('BarreVie', 'assets/BarreVie.png');
+    
         }
 
     var player;
@@ -71,6 +73,7 @@
     var powerUp;
     var gameOver = false;
     var surRalentisseur = false;
+    var health = 99;
 
     function create(){
         //Affichage backgound + Second Plan
@@ -167,6 +170,7 @@
         //definition des tuiles de plateformes solides
         calque_contour.setCollisionByProperty ({ estSolide: true });
 
+
         //creation perso
         player = this.physics.add.sprite(800, 1472, 'perso');
         player.setCollideWorldBounds(true);
@@ -224,21 +228,23 @@
         this.physics.add.collider(player, plateforme_foret, notRalentisseur, null, this);
         this.physics.add.collider(player, plateforme_grotte, notRalentisseur, null, this);
 
-        this.physics.add.overlap(player, pointe_haut, mortPointe, null, this);
-        this.physics.add.overlap(player, pointe_droite, mortPointe, null, this);
-        this.physics.add.overlap(player, pointe_gauche, mortPointe, null, this);
+        this.physics.add.overlap(player, pointe_haut, mort, null, this);
+        this.physics.add.overlap(player, pointe_droite, mort, null, this);
+        this.physics.add.overlap(player, pointe_gauche, mort, null, this);
 
         this.physics.add.collider(player, ralentisseur, onRalentisseur, null, this);
 
         //Colision ennemi
         this.physics.add.collider(bat, calque_contour);
-        this.physics.add.collider(bat, bordure_ennemi, verification, null, this);
+        this.physics.add.collider(bat, bordure_ennemi);
 
-        //Création barre de vie
-        /*let healthbar = makeBar(140, 100, 0x2980b9);
-        setValue(healtbar, 100);*/
-
-    }
+        //Création Barre de vie
+        let healthContainer = this.add.sprite(80, 20, "CadreVie").setScrollFactor(0);
+        let healthBar = this.add.sprite(healthContainer.x, healthContainer.y, "BarreVie").setScrollFactor(0);
+        this.healthMask = this.add.sprite(healthBar.x, healthBar.y, "BarreVie").setScrollFactor(0);
+        this.healthMask.visible = false;
+        healthBar.mask = new Phaser.Display.Masks.BitmapMask(this, this.healthMask);
+    }  
     
     function update(){
 
@@ -321,7 +327,7 @@
     }
 
     // Gestion de la mort du personnage avec les pointes
-    function mortPointe(player) {
+    function mort(player) {
         console.log("Tmort");
         this.physics.pause();
         player.setTint(0xff0000);
@@ -338,24 +344,27 @@
     }
 
     function collisionEnnemi(player, bat) {
-        console.log("paf");
-        bat.disableBody(true, true);
+        if (player.body.touching.down) {
+            console.log("kill ennemy");
+            bat.disableBody(true, true);
+        }
+        else {
+            console.log("paf");
+            bat.disableBody(true, true);
+            this.healthMask.x -= 33;
+            health -= 33;
+            verificationVie();
+        }
+        
+    
     }
 
-    //Création Barre de Vie
-    /*function makeBar(x, y, color) {
-        let bar = this.add.graphics();
-        bar.fillStyle(color, 1)
-        bar.fillRect(0, 0, 200, 50);
-        bar.x =x;
-        bar.y = y;
-
-        return bar;
+    function verificationVie(){
+        console.log(health)
+        if (health  == 0){
+            mort();
+        }
     }
-
-    function setValue(bar, percentage) {
-        bar.scaleX = percentage/100;
-    }*/
 
     </script>
 </body>
