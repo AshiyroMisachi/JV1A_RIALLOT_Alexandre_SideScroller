@@ -338,16 +338,27 @@
         if (player.body.touching.down) {
             console.log("kill ennemy");
             bat.disableBody(true, true);
+            player.setVelocityY(-pDeplacementY);
         }
         else {
             console.log("paf");
             bat.disableBody(true, true);
+            player.setVelocityX(-pDeplacementX);
             this.healthMask.x -= 33;
             health -= 33;
             verificationVie();
         }
     }
+
+    /* KB ENNEMY
+    Blocage touche
+    Sound Design
+    Frame d'invulnérabilité
+    Dash/DoubleJump en upgrade -> Wall Jump de Base
     
+
+    */
+
     </script>
 </body>
 </html>
