@@ -78,6 +78,8 @@
     // Variables Autres
     var powerUp;
     var gameOver = false;
+    var offTouche = false; 
+    var beHit = false;
 
     function create(){
         //Affichage backgound + Second Plan
@@ -218,7 +220,8 @@
 
         //Création Collision Player
         this.physics.add.collider(player, calque_contour, notRalentisseur, null, this);
-        this.physics.add.overlap(player, bat, collisionEnnemi, null, this);
+        this.physics.add.overlap(player, bat, collisionEnnemi, getHit, this);
+        this.physics.add.overlap(player, bat, verificationVie, null, this);
 
         //Création Collision Objet
         this.physics.add.collider(powerUp , calque_contour);
@@ -252,48 +255,60 @@
 
         // Mouvement du joueur
         //Gauche
-        if (cursors.left.isDown || controller.left ){ 
-            player.setVelocityX(-pDeplacementX); 
-            player.anims.play('left', true); 
-        }
-        // Droite 
-        else if (cursors.right.isDown || controller.right){ 
-            player.setVelocityX(pDeplacementX); 
-            player.anims.play('right', true); 
-        }
-        // Immobile
-        else{ 
-            player.setVelocityX(0); 
-            player.anims.play('turn'); 
-        }
-        // Saut
-        if (cursors.up.isDown && player.body.blocked.down ||  controller.up && player.body.blocked.down){
-            player.setVelocityY(-pDeplacementY); 
-        }
-        
-        //Wall Jump
-        if (cursors.up.isDown && player.body.blocked.right || controller.up && player.body.blocked.right) {
-            if (walljump == true) {
-                walljump = false;
-                setTimeout(cdWallJump, 500);
-                player.setVelocityY(-pDeplacementY);
-                player.setVelocityX(-1000);
-                cursors.right.enabled = true;
+        if (offTouche == false) {
+            if (cursors.left.isDown || controller.left ){ 
+                player.setVelocityX(-pDeplacementX); 
+                player.anims.play('left', true); 
             }
-        }
-        if (cursors.up.isDown && player.body.blocked.left || controller.up && player.body.blocked.left) {
-            if (walljump == true) {
-                walljump = false;
-                setTimeout(cdWallJump, 500);
-                player.setVelocityY(-pDeplacementY);
-                player.setVelocityX(1000);
+            // Droite 
+            else if (cursors.right.isDown || controller.right){ 
+                player.setVelocityX(pDeplacementX); 
+                player.anims.play('right', true); 
+            }
+            // Immobile
+            else{ 
+                player.setVelocityX(0); 
+                player.anims.play('turn'); 
+            }
+            // Saut
+            if (cursors.up.isDown && player.body.blocked.down ||  controller.up && player.body.blocked.down){
+                player.setVelocityY(-pDeplacementY); 
+            }
+            
+            //Wall Jump
+            if (cursors.up.isDown && player.body.blocked.right || controller.up && player.body.blocked.right) {
+                if (walljump == true) {
+                    walljump = false;
+                    offTouche = true;
+                    setTimeout(cdWallJump, 500);
+                    setTimeout(blocageTouche, 200);
+                    player.setVelocityY(-pDeplacementY);
+                    player.setVelocityX(-50);
+                }
+            }
+            if (cursors.up.isDown && player.body.blocked.left || controller.up && player.body.blocked.left) {
+                if (walljump == true) {
+                    walljump = false;
+                    offTouche = true;
+                    setTimeout(cdWallJump, 500);
+                    setTimeout(blocageTouche, 200);
+                    player.setVelocityY(-pDeplacementY);
+                    player.setVelocityX(50);
+                }
             }
         }
     }
 
+
     // FONCTION RANDOM VERIFICATION
     function verification() {
         console.log("Je vérifie, je vérifie");
+    }
+
+    //Gestion Blocage Touche
+
+    function blocageTouche() {
+        offTouche = false;
     }
 
     // Gestion du Wall Jump
@@ -310,12 +325,15 @@
     function verificationVie(){
         console.log(health)
         if (health  == 0){
-            mort();
+            console.log("Tmort");
+            player.setTint(0xff0000);
+            player.anims.play('turn');
+            this.physics.pause();
         }
     }
 
     // Gestion de la mort du personnage
-    function mort(player) {
+    function mort() {
         console.log("Tmort");
         this.physics.pause();
         player.setTint(0xff0000);
@@ -340,23 +358,56 @@
             bat.disableBody(true, true);
             player.setVelocityY(-pDeplacementY);
         }
-        else {
-            console.log("paf");
-            bat.disableBody(true, true);
-            player.setVelocityX(-pDeplacementX);
+        else if (player.body.touching.right) {
+            console.log("paf droite");
+            beHit = true;
+            setTimeout(ableHit, 500);  
+            offTouche = true;
+            setTimeout(blocageTouche, 200);
+            player.setVelocityX(-200);
             this.healthMask.x -= 33;
             health -= 33;
-            verificationVie();
+        }
+        else if (player.body.touching.left) {
+            console.log("paf gauche");
+            beHit = true;
+            setTimeout(ableHit, 500);  
+            offTouche = true;
+            setTimeout(blocageTouche, 200);
+            player.setVelocityX(50);
+            this.healthMask.x -= 33;
+            health -= 33;
+        }
+        else {
+            console.log("paf mid");
+            beHit = true;
+            setTimeout(ableHit, 500); 
+            offTouche = true;
+            setTimeout(blocageTouche, 200);
+            player.setVelocityX(50);
+            this.healthMask.x -= 33;
+            health -= 33;
         }
     }
 
-    /* KB ENNEMY
-    Blocage touche
-    Sound Design
-    Frame d'invulnérabilité
-    Dash/DoubleJump en upgrade -> Wall Jump de Base
-    
+    // Gestion des frames d'invulnérabilité
+    function getHit() {
+        if ( beHit == false ) {
+            return true
+        }
+        else {
+            return false
+        }
+    }
 
+    function ableHit() {
+        beHit = false;
+    }
+
+    /* KB ENNEMY
+    Sound Design
+    Frame d'invulnérabilité  REGARDER LE DERNIER TRUC DE LA PROF POOUR DESAC UN COLISION ET ENSUITE COMPRENDRE COMMENT FAIRE CLIGNOTER LE SPRITE 
+    Dash/DoubleJump en upgrade -> Wall Jump de Base
     */
 
     </script>
