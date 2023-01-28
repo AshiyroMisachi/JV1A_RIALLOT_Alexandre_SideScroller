@@ -64,16 +64,20 @@
     
         }
 
+    // Variable Player
     var player;
-    var cursors;
-    var plateformes;
-    var gameOver = false;
-    var controller = false;
+    var health = 99;
+    var pDeplacementX = 160;
+    var pDeplacementY = 210; 
     var walljump = false;
+
+    // Variable Controle
+    var cursors;
+    var controller = false;
+
+    // Variables Autres
     var powerUp;
     var gameOver = false;
-    var surRalentisseur = false;
-    var health = 99;
 
     function create(){
         //Affichage backgound + Second Plan
@@ -167,7 +171,7 @@
             const EBordureEnnemi = bordure_ennemi.create( calque_BordureEnnemi.x + 16, calque_BordureEnnemi.y +16, "TextureBordureEnnemi").body.setAllowGravity(false).setImmovable(true);
         });
 
-        //definition des tuiles de plateformes solides
+        //definition des tuiles solides
         calque_contour.setCollisionByProperty ({ estSolide: true });
 
 
@@ -192,6 +196,8 @@
             frameRate: 10,
             repeat: -1
         });
+
+
         //Recuperation Controle Clavier
         cursors = this.input.keyboard.createCursorKeys();
         //Activation Manette
@@ -199,14 +205,10 @@
             controller = pad;
         });
 
-        // Ajout Physique entre Perso et Monde
-        this.physics.add.collider(player, calque_contour);
 
-        // Redimension du Monde
+        //Gestion Caméra
         this.physics.world.setBounds(0, 0, 1600, 1600);
-        //  Creation de la Camera
         this.cameras.main.setBounds(0, 0, 1600, 1600);
-        // Ancrage de la Camera
         this.cameras.main.startFollow(player);  
 
         //Aparition PowerUp
@@ -250,21 +252,13 @@
 
         // Mouvement du joueur
         //Gauche
-        if (cursors.left.isDown && surRalentisseur == true || controller.left && surRalentisseur == true) {
-            player.setVelocityX(-80);
-            player.anims.play('left', true);
-        }
-        else if (cursors.left.isDown || controller.left ){ 
-            player.setVelocityX(-160); 
+        if (cursors.left.isDown || controller.left ){ 
+            player.setVelocityX(-pDeplacementX); 
             player.anims.play('left', true); 
         }
         // Droite 
-        else if (cursors.right.isDown && surRalentisseur == true || controller.right && surRalentisseur == true) {
-            player.setVelocityX(80);
-            player.anims.play('right', true)
-        }
         else if (cursors.right.isDown || controller.right){ 
-            player.setVelocityX(160); 
+            player.setVelocityX(pDeplacementX); 
             player.anims.play('right', true); 
         }
         // Immobile
@@ -273,28 +267,16 @@
             player.anims.play('turn'); 
         }
         // Saut
-        if (cursors.up.isDown && player.body.blocked.down && surRalentisseur == true || controller.up && player.body.blocked.down && surRalentisseur == true) {
-            player.setVelocityY(-105);
-        }
-        else if (cursors.up.isDown && player.body.blocked.down ||  controller.up && player.body.blocked.down){
-            player.setVelocityY(-210); 
+        if (cursors.up.isDown && player.body.blocked.down ||  controller.up && player.body.blocked.down){
+            player.setVelocityY(-pDeplacementY); 
         }
         
         //Wall Jump
-        if (cursors.up.isDown && player.body.blocked.right && surRalentisseur == true|| controller.up && player.body.blocked.right && surRalentisseur == true) {
+        if (cursors.up.isDown && player.body.blocked.right || controller.up && player.body.blocked.right) {
             if (walljump == true) {
                 walljump = false;
                 setTimeout(cdWallJump, 500);
-                player.setVelocityY(-105);
-                player.setVelocityX(-500);
-                cursors.right.enabled = true;
-            }
-        }
-        else if (cursors.up.isDown && player.body.blocked.right || controller.up && player.body.blocked.right) {
-            if (walljump == true) {
-                walljump = false;
-                setTimeout(cdWallJump, 500);
-                player.setVelocityY(-210);
+                player.setVelocityY(-pDeplacementY);
                 player.setVelocityX(-1000);
                 cursors.right.enabled = true;
             }
@@ -303,18 +285,16 @@
             if (walljump == true) {
                 walljump = false;
                 setTimeout(cdWallJump, 500);
-                player.setVelocityY(-210);
+                player.setVelocityY(-pDeplacementY);
                 player.setVelocityX(1000);
             }
         }
     }
 
     // FONCTION RANDOM VERIFICATION
-
     function verification() {
         console.log("Je vérifie, je vérifie");
     }
-
 
     // Gestion du Wall Jump
     function unlockWallJump(player, powerUp) {
@@ -326,7 +306,15 @@
         walljump = true;
     }
 
-    // Gestion de la mort du personnage avec les pointes
+    // Verification de la vie du joueur pour savoir si il est censé être mort ou non
+    function verificationVie(){
+        console.log(health)
+        if (health  == 0){
+            mort();
+        }
+    }
+
+    // Gestion de la mort du personnage
     function mort(player) {
         console.log("Tmort");
         this.physics.pause();
@@ -336,13 +324,16 @@
 
     //Gestion du ralentissement sur les ralentisseurs
     function onRalentisseur() {
-        surRalentisseur = true;
+        pDeplacementX = 80;
+        pDeplacementY = 105;
     }
 
     function notRalentisseur() {
-        surRalentisseur = false;
+        pDeplacementX = 160;
+        pDeplacementY = 210;
     }
 
+    // Gestion de l'intéraction Joueur Ennemi
     function collisionEnnemi(player, bat) {
         if (player.body.touching.down) {
             console.log("kill ennemy");
@@ -355,17 +346,8 @@
             health -= 33;
             verificationVie();
         }
-        
+    }
     
-    }
-
-    function verificationVie(){
-        console.log(health)
-        if (health  == 0){
-            mort();
-        }
-    }
-
     </script>
 </body>
 </html>
