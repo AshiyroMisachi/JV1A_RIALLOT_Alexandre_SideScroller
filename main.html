@@ -36,13 +36,10 @@
             this.load.image('TexturePlateformeBois', 'assets/TexturePlateformeBois.png');
             this.load.image('TexturePlateformeGrotte', 'assets/TexturePlateformeGrotte.png');
             this.load.image('TexturePlateformeDonjon', 'assets/TexturePlateformeDonjon.png');
-
             this.load.image('TextureRalentisseur', 'assets/TextureRalentisseur.png');
-
             this.load.image('TextureBordureEnnemi', 'assets/TextureBordureEnnemi.png');
-
             this.load.image('TextureDoubleJump', 'assets/TextureDoubleJump.png');
-
+            this.load.image('TextureDash', 'assets/TextureDash.png');
             this.load.image('TextureHeal', 'assets/TexturePV.png');
 
             //Preload Texture Ennemi
@@ -72,6 +69,8 @@
     //Variable PowerUp
     var doublejump = false;
     var unlockDoubleJump = false;
+    var dash = false;
+    var unlockDash = false;
 
     // Variable Controle
     var cursors;
@@ -169,6 +168,12 @@
             const PODoubleJump = item_doublejump.create( calque_ObjetDoubleJump.x + 16, calque_ObjetDoubleJump.y +16, "TextureDoubleJump").body.setAllowGravity(false);
         });
 
+        item_dash = this.physics.add.group();
+        calque_ObjetDash = carteDuNiveau.getObjectLayer('ObjetDash');
+        calque_ObjetDash.objects.forEach ( calque_ObjetDash => {
+            const PODash = item_dash.create( calque_ObjetDash.x + 16, calque_ObjetDash.y +16, "TextureDash").body.setAllowGravity(false);
+        });
+
         //Création Item Heal
         item_heal = this.physics.add.group();
         calque_ObjetHeal = carteDuNiveau.getObjectLayer('ObjetHeal');
@@ -240,6 +245,7 @@
 
         //Collision PowerUp
         this.physics.add.overlap(player, item_doublejump, unlockDJ, null, this);
+        this.physics.add.overlap(player, item_dash, unlockD, null, this);
 
         //Colision ennemi
         this.physics.add.collider(bat, calque_contour);
@@ -256,7 +262,6 @@
     function update(){
 
         // Mouvement du joueur
-       
         if (offTouche == false) {
             //Gauche
             if(cursors.left.isDown && cursors.shift.isDown || controller.left && controller.A ){
@@ -323,6 +328,18 @@
                 player.setVelocityY(-pDeplacementY);
                 doublejump = false;
             }
+
+            //Dash
+            if (cursors.right.isDown && cursors.space.isDown && dash == true) {
+                offTouche = true;
+                setTimeout(blocageTouche, 500);
+                player.setVelocityX(pDeplacementX*3)
+            }
+            else if (cursors.left.isDown && cursors.space.isDown && dash == true) {
+                offTouche = true;
+                setTimeout(blocageTouche, 500);
+                player.setVelocityX(-pDeplacementX*3)
+            }
         }
     }
 
@@ -345,6 +362,19 @@
     function cdDJ() {
         if (unlockDoubleJump == true ) {
             doublejump = true;
+        }
+    }
+
+    //Gestion du Dash
+    function unlockD(player, item_dash) {
+        item_dash.disableBody(true, true);
+        unlockDash = true;
+        dash = true;
+    }
+
+    function cdDash() {
+        if (unlockDash == true) {
+            dash = true;
         }
     }
 
