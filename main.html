@@ -114,6 +114,11 @@
             tileset
         );
 
+        const calque_spike = carteDuNiveau.createLayer (
+            "Pointe",
+            tileset
+        );
+
         //Création des Plateformes
         plateforme_foret = this.physics.add.group();
         calque_ObjetPlateformeForet = carteDuNiveau.getObjectLayer('ObjetPlateformeForet');
@@ -137,25 +142,6 @@
         calque_ObjetPlateformeDonjon = carteDuNiveau.getObjectLayer('ObjetPlateformeDonjon');
         calque_ObjetPlateformeDonjon.objects.forEach( calque_ObjetPlateformeDonjon => {
             const POPlateformeDonjon = plateforme_donjon.create( calque_ObjetPlateformeDonjon.x + 16, calque_ObjetPlateformeDonjon.y + 3, "TexturePlateformeDonjon").body.setAllowGravity(false).setImmovable(true);
-        });
-
-        //Création des Pointes
-        pointe_haut = this.physics.add.group();
-        calque_ObjetPointeHaut = carteDuNiveau.getObjectLayer('ObjetPointeHaut');
-        calque_ObjetPointeHaut.objects.forEach( calque_ObjetPointeHaut => {
-            const POPointeHaut = pointe_haut.create( calque_ObjetPointeHaut.x + 16, calque_ObjetPointeHaut.y + 16, "TexturePointeHaut").body.setAllowGravity(false);
-        });
-
-        pointe_droite = this.physics.add.group();
-        calque_ObjetPointeDroite = carteDuNiveau.getObjectLayer('ObjetPointeDroite');
-        calque_ObjetPointeDroite.objects.forEach( calque_ObjetPointeDroite => {
-            const POPointeDroite = pointe_droite.create( calque_ObjetPointeDroite.x + 16, calque_ObjetPointeDroite.y + 16, "TexturePointeDroite").body.setAllowGravity(false);
-        });
-
-        pointe_gauche = this.physics.add.group();
-        calque_ObjetPointeGauche = carteDuNiveau.getObjectLayer('ObjetPointeGauche');
-        calque_ObjetPointeGauche.objects.forEach( calque_ObjetPointeGauche => {
-            const POPointeGauche = pointe_gauche.create( calque_ObjetPointeGauche.x + 16, calque_ObjetPointeGauche.y + 16, "TexturePointeGauche").body.setAllowGravity(false);
         });
 
         //Création Ralentisseur
@@ -203,7 +189,7 @@
 
         //definition des tuiles solides
         calque_contour.setCollisionByProperty ({ estSolide: true });
-
+        calque_spike.setCollisionByProperty ({ estSolide: true });
 
         //creation perso
         player = this.physics.add.sprite(800, 1472, 'perso');
@@ -241,23 +227,18 @@
         this.cameras.main.setBounds(0, 0, 1600, 1600);
         this.cameras.main.startFollow(player);  
 
-        //Aparition PowerUp
-
         //Création Collision Player
         this.physics.add.collider(player, calque_contour, notRalentisseur, null, this);
         this.physics.add.overlap(player, bat, collisionEnnemi, getHit, this);
         this.physics.add.overlap(player, bat, verificationVie, null, this);
+        this.physics.add.collider(player, calque_spike, mort, null, this);
         this.physics.add.overlap(player, block_end, victory, null, this);
-
+        
         //Création Collision Objet
         this.physics.add.collider(player, plateforme_bois, notRalentisseur, null, this);
         this.physics.add.collider(player, plateforme_donjon, notRalentisseur, null, this);
         this.physics.add.collider(player, plateforme_foret, notRalentisseur, null, this);
         this.physics.add.collider(player, plateforme_grotte, notRalentisseur, null, this);
-
-        this.physics.add.overlap(player, pointe_haut, mort, null, this);
-        this.physics.add.overlap(player, pointe_droite, mort, null, this);
-        this.physics.add.overlap(player, pointe_gauche, mort, null, this);
 
         this.physics.add.collider(player, ralentisseur, onRalentisseur, null, this);
 
@@ -510,6 +491,8 @@
             health += 33;
         }
     }
+
+
     /* 
     Sound Design
     Dash en upgrade  FLAME VIOLETTE
