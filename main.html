@@ -209,14 +209,12 @@
             repeat: -1
         });
 
-
         //Recuperation Controle Clavier
         cursors = this.input.keyboard.createCursorKeys();
         //Activation Manette
         this.input.gamepad.once('connected', function (pad) {
             controller = pad;
         });
-
 
         //Gestion Caméra
         this.physics.world.setBounds(0, 0, 1600, 1600);
@@ -261,7 +259,7 @@
        
         if (offTouche == false) {
             //Gauche
-            if(cursors.left.isDown && cursors.shift.isDown){
+            if(cursors.left.isDown && cursors.shift.isDown || controller.left && controller.A ){
                 player.setVelocityX(-pDeplacementX*1.5); 
                 player.anims.play('left', true); 
             }
@@ -272,7 +270,7 @@
             }
     
             // Droite
-            else if(cursors.right.isDown && cursors.shift.isDown){
+            else if(cursors.right.isDown && cursors.shift.isDown || controller.right && controller.A ){
                 player.setVelocityX(pDeplacementX*1.5); 
                 player.anims.play('right', true); 
             }
@@ -320,7 +318,7 @@
             }
 
             //Double Jump
-            if ( cursors.up.isDown && doublejump == true && player.body.blocked.none ) {
+            if ( (cursors.up.isDown && doublejump == true && player.body.blocked.none) || (controller.up && doublejump == true && player.body.blocked.none) ) {
                 console.log("DOUBLE JUMP");
                 player.setVelocityY(-pDeplacementY);
                 doublejump = false;
@@ -328,14 +326,7 @@
         }
     }
 
-
-    // FONCTION RANDOM VERIFICATION
-    function verification() {
-        console.log("Je vérifie, je vérifie");
-    }
-
     //Gestion Blocage Touche
-
     function blocageTouche() {
         offTouche = false;
     }
@@ -487,7 +478,6 @@
             health += 33;
         }
     }
-
 
     /* 
     Sound Design
