@@ -332,11 +332,15 @@
             //Dash
             if (cursors.right.isDown && cursors.space.isDown && dash == true) {
                 offTouche = true;
+                dash = false;
+                setTimeout(cdDash, 2000);
                 setTimeout(blocageTouche, 500);
                 player.setVelocityX(pDeplacementX*3)
             }
             else if (cursors.left.isDown && cursors.space.isDown && dash == true) {
                 offTouche = true;
+                dash = false;
+                setTimeout(cdDash, 2000);
                 setTimeout(blocageTouche, 500);
                 player.setVelocityX(-pDeplacementX*3)
             }
