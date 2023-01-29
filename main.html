@@ -80,6 +80,7 @@
     var gameOver = false;
     var offTouche = false; 
     var beHit = false;
+    var clignotement = 0;
 
     function create(){
         //Affichage backgound + Second Plan
@@ -360,34 +361,23 @@
         }
         else if (player.body.touching.right) {
             console.log("paf droite");
-            beHit = true;
-            setTimeout(ableHit, 500);  
-            offTouche = true;
-            setTimeout(blocageTouche, 200);
-            player.setVelocityX(-200);
-            this.healthMask.x -= 33;
-            health -= 33;
+            player.setVelocityX(-50);
         }
         else if (player.body.touching.left) {
             console.log("paf gauche");
-            beHit = true;
-            setTimeout(ableHit, 500);  
-            offTouche = true;
-            setTimeout(blocageTouche, 200);
             player.setVelocityX(50);
-            this.healthMask.x -= 33;
-            health -= 33;
         }
         else {
             console.log("paf mid");
-            beHit = true;
-            setTimeout(ableHit, 500); 
-            offTouche = true;
-            setTimeout(blocageTouche, 200);
             player.setVelocityX(50);
-            this.healthMask.x -= 33;
-            health -= 33;
         }
+        beHit = true;
+        setTimeout(ableHit, 500); 
+        offTouche = true;
+        setTimeout(blocageTouche, 200);
+        this.healthMask.x -= 33;
+        health -= 33;
+        pinvisible();
     }
 
     // Gestion des frames d'invulnérabilité
@@ -402,12 +392,33 @@
 
     function ableHit() {
         beHit = false;
+        console.log("Peut se faire touché");
+    }
+
+    function pinvisible() {
+        console.log("invisible");
+        this.player.visible = false;
+        setTimeout(pvisible, 100);
+    }
+
+    function pvisible() {
+        if (clignotement < 2) {
+            console.log("visible");
+            this.player.visible = true;
+            setTimeout(pinvisible, 100);   
+            clignotement += 1;
+        }
+        else {
+            this.player.visible = true;
+            clignotement = 0;
+        }
+        
     }
 
     /* KB ENNEMY
     Sound Design
-    Frame d'invulnérabilité  REGARDER LE DERNIER TRUC DE LA PROF POOUR DESAC UN COLISION ET ENSUITE COMPRENDRE COMMENT FAIRE CLIGNOTER LE SPRITE 
-    Dash/DoubleJump en upgrade -> Wall Jump de Base
+    Dash/DoubleJump en upgrade -> Wall Jump de Base  FLAME VERTE/VIOLETTE
+    ITEM A RECUP POUR LA VIE FLAMME ROSE
     */
 
     </script>
