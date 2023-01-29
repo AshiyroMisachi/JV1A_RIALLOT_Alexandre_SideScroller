@@ -45,6 +45,8 @@
 
             this.load.image('TextureBordureEnnemi', 'assets/TextureBordureEnnemi.png');
 
+            this.load.image('TextureDoubleJump', 'assets/TextureDoubleJump.png');
+
             //Preload Texture Ennemi
             this.load.image('TextureBat', 'assets/Bat.png');
 
@@ -69,12 +71,16 @@
     var pDeplacementY = 210; 
     var walljump = true;
 
+    //Variable PowerUp
+    var doublejump = false;
+    var unlockDoubleJump = false;
+
     // Variable Controle
     var cursors;
     var controller = false;
 
     // Variables Autres
-    var powerUp;
+
     var gameOver = false;
     var offTouche = false; 
     var beHit = false;
@@ -172,6 +178,13 @@
             const EBordureEnnemi = bordure_ennemi.create( calque_BordureEnnemi.x + 16, calque_BordureEnnemi.y +16, "TextureBordureEnnemi").body.setAllowGravity(false).setImmovable(true);
         });
 
+        //Création PowerUp
+        item_doublejump = this.physics.add.group();
+        calque_ObjetDoubleJump = carteDuNiveau.getObjectLayer('ObjetDoubleJump');
+        calque_ObjetDoubleJump.objects.forEach( calque_ObjetDoubleJump => {
+            const PODoubleJump = item_doublejump.create( calque_ObjetDoubleJump.x + 16, calque_ObjetDoubleJump.y +16, "TextureDoubleJump").body.setAllowGravity(false);
+        });
+
         //definition des tuiles solides
         calque_contour.setCollisionByProperty ({ estSolide: true });
 
@@ -220,7 +233,6 @@
         this.physics.add.overlap(player, bat, verificationVie, null, this);
 
         //Création Collision Objet
-
         this.physics.add.collider(player, plateforme_bois, notRalentisseur, null, this);
         this.physics.add.collider(player, plateforme_donjon, notRalentisseur, null, this);
         this.physics.add.collider(player, plateforme_foret, notRalentisseur, null, this);
@@ -231,6 +243,9 @@
         this.physics.add.overlap(player, pointe_gauche, mort, null, this);
 
         this.physics.add.collider(player, ralentisseur, onRalentisseur, null, this);
+
+        //Collision PowerUp
+        this.physics.add.overlap(player, item_doublejump, unlockDJ, null, this);
 
         //Colision ennemi
         this.physics.add.collider(bat, calque_contour);
@@ -253,11 +268,13 @@
                 player.setVelocityX(-pDeplacementX); 
                 player.anims.play('left', true); 
             }
+
             // Droite 
             else if (cursors.right.isDown || controller.right){ 
                 player.setVelocityX(pDeplacementX); 
                 player.anims.play('right', true); 
             }
+
             // Immobile
             else{ 
                 player.setVelocityX(0); 
@@ -265,7 +282,9 @@
             }
             // Saut
             if (cursors.up.isDown && player.body.blocked.down ||  controller.up && player.body.blocked.down){
+                console.log("SAUT CLASSIQUE");
                 player.setVelocityY(-pDeplacementY); 
+                setTimeout(cdDJ, 500);
             }
             
             //Wall Jump
@@ -279,6 +298,7 @@
                     player.setVelocityX(-50);
                 }
             }
+
             if (cursors.up.isDown && player.body.blocked.left || controller.up && player.body.blocked.left) {
                 if (walljump == true) {
                     walljump = false;
@@ -288,6 +308,13 @@
                     player.setVelocityY(-pDeplacementY);
                     player.setVelocityX(50);
                 }
+            }
+
+            //Double Jump
+            if ( cursors.up.isDown && doublejump == true && player.body.blocked.none ) {
+                console.log("DOUBLE JUMP");
+                player.setVelocityY(-pDeplacementY);
+                doublejump = false;
             }
         }
     }
@@ -305,13 +332,20 @@
     }
 
     // Gestion du Wall Jump
-    function unlockWallJump(player, powerUp) {
-        powerUp.disableBody(true,true);
-        walljump = true
-    }
-
     function cdWallJump() {
         walljump = true;
+    }
+
+    //Gestion Du DoubleJump
+    function unlockDJ(player, item_doublejump) {
+        item_doublejump.disableBody(true, true);
+        unlockDoubleJump = true;
+    }
+
+    function cdDJ() {
+        if (unlockDoubleJump == true ) {
+            doublejump = true;
+        }
     }
 
     // Verification de la vie du joueur pour savoir si il est censé être mort ou non
