@@ -45,8 +45,6 @@
 
             this.load.image('TextureBordureEnnemi', 'assets/TextureBordureEnnemi.png');
 
-            this.load.image('WallJumpUp', 'assets/MantisClaw.png');
-
             //Preload Texture Ennemi
             this.load.image('TextureBat', 'assets/Bat.png');
 
@@ -69,7 +67,7 @@
     var health = 99;
     var pDeplacementX = 160;
     var pDeplacementY = 210; 
-    var walljump = false;
+    var walljump = true;
 
     // Variable Controle
     var cursors;
@@ -215,9 +213,6 @@
         this.cameras.main.startFollow(player);  
 
         //Aparition PowerUp
-        powerUp = this.physics.add.group();
-        powerUp.create(900, 1472, 'WallJumpUp').setScale(0.065);
-        
 
         //Création Collision Player
         this.physics.add.collider(player, calque_contour, notRalentisseur, null, this);
@@ -225,9 +220,6 @@
         this.physics.add.overlap(player, bat, verificationVie, null, this);
 
         //Création Collision Objet
-        this.physics.add.collider(powerUp , calque_contour);
-
-        this.physics.add.overlap(player, powerUp, unlockWallJump, null, this);
 
         this.physics.add.collider(player, plateforme_bois, notRalentisseur, null, this);
         this.physics.add.collider(player, plateforme_donjon, notRalentisseur, null, this);
@@ -362,22 +354,37 @@
         else if (player.body.touching.right) {
             console.log("paf droite");
             player.setVelocityX(-50);
+            beHit = true;
+            setTimeout(ableHit, 500); 
+            offTouche = true;
+            setTimeout(blocageTouche, 200);
+            this.healthMask.x -= 33;
+            health -= 33;
+            pinvisible();
         }
         else if (player.body.touching.left) {
             console.log("paf gauche");
             player.setVelocityX(50);
+            beHit = true;
+            setTimeout(ableHit, 500); 
+            offTouche = true;
+            setTimeout(blocageTouche, 200);
+            this.healthMask.x -= 33;
+            health -= 33;
+            pinvisible();
         }
         else {
             console.log("paf mid");
             player.setVelocityX(50);
+            beHit = true;
+            setTimeout(ableHit, 500); 
+            offTouche = true;
+            setTimeout(blocageTouche, 200);
+            this.healthMask.x -= 33;
+            health -= 33;
+            pinvisible();
         }
-        beHit = true;
-        setTimeout(ableHit, 500); 
-        offTouche = true;
-        setTimeout(blocageTouche, 200);
-        this.healthMask.x -= 33;
-        health -= 33;
-        pinvisible();
+            
     }
 
     // Gestion des frames d'invulnérabilité
@@ -415,7 +422,7 @@
         
     }
 
-    /* KB ENNEMY
+    /* 
     Sound Design
     Dash/DoubleJump en upgrade -> Wall Jump de Base  FLAME VERTE/VIOLETTE
     ITEM A RECUP POUR LA VIE FLAMME ROSE
