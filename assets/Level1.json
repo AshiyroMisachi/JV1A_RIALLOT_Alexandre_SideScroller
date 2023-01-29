@@ -2186,9 +2186,53 @@
          "visible":true,
          "x":0,
          "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":37,
+         "name":"ObjetEnd",
+         "objects":[
+                {
+                 "class":"",
+                 "height":32,
+                 "id":327,
+                 "name":"",
+                 "rotation":0,
+                 "visible":true,
+                 "width":32,
+                 "x":640,
+                 "y":192
+                }, 
+                {
+                 "class":"",
+                 "height":32,
+                 "id":328,
+                 "name":"",
+                 "rotation":0,
+                 "visible":true,
+                 "width":32,
+                 "x":672,
+                 "y":192
+                }, 
+                {
+                 "class":"",
+                 "height":32,
+                 "id":329,
+                 "name":"",
+                 "rotation":0,
+                 "visible":true,
+                 "width":32,
+                 "x":704,
+                 "y":192
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
         }],
- "nextlayerid":37,
- "nextobjectid":327,
+ "nextlayerid":38,
+ "nextobjectid":330,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.9.2",

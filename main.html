@@ -194,6 +194,13 @@
             const POHeal = item_heal.create( calque_ObjetHeal.x + 16, calque_ObjetHeal.y + 16, "TextureHeal").body.setAllowGravity(false);
         })
 
+        //Création de la zone de fin
+        block_end = this.physics.add.group();
+        calque_ObjetEnd = carteDuNiveau.getObjectLayer('ObjetEnd');
+        calque_ObjetEnd.objects.forEach( calque_ObjetEnd => {
+            const PEnd = block_end.create ( calque_ObjetEnd.x + 16, calque_ObjetEnd.y +16, "TextureBordureEnnemi").body.setAllowGravity(false);
+        })
+
         //definition des tuiles solides
         calque_contour.setCollisionByProperty ({ estSolide: true });
 
@@ -240,6 +247,7 @@
         this.physics.add.collider(player, calque_contour, notRalentisseur, null, this);
         this.physics.add.overlap(player, bat, collisionEnnemi, getHit, this);
         this.physics.add.overlap(player, bat, verificationVie, null, this);
+        this.physics.add.overlap(player, block_end, victory, null, this);
 
         //Création Collision Objet
         this.physics.add.collider(player, plateforme_bois, notRalentisseur, null, this);
@@ -388,6 +396,14 @@
         console.log("Tmort");
         this.physics.pause();
         player.setTint(0xff0000);
+        player.anims.play('turn');
+    }
+
+    //Gestion Victoire
+    function victory() {
+        console.log("YOU WIN");
+        this.physics.pause();
+        player.setTint(0x008000);
         player.anims.play('turn');
     }
 
