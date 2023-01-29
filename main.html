@@ -47,6 +47,8 @@
 
             this.load.image('TextureDoubleJump', 'assets/TextureDoubleJump.png');
 
+            this.load.image('TextureHeal', 'assets/TexturePV.png');
+
             //Preload Texture Ennemi
             this.load.image('TextureBat', 'assets/Bat.png');
 
@@ -185,6 +187,13 @@
             const PODoubleJump = item_doublejump.create( calque_ObjetDoubleJump.x + 16, calque_ObjetDoubleJump.y +16, "TextureDoubleJump").body.setAllowGravity(false);
         });
 
+        //Création Item Heal
+        item_heal = this.physics.add.group();
+        calque_ObjetHeal = carteDuNiveau.getObjectLayer('ObjetHeal');
+        calque_ObjetHeal.objects.forEach( calque_ObjetHeal => {
+            const POHeal = item_heal.create( calque_ObjetHeal.x + 16, calque_ObjetHeal.y + 16, "TextureHeal").body.setAllowGravity(false);
+        })
+
         //definition des tuiles solides
         calque_contour.setCollisionByProperty ({ estSolide: true });
 
@@ -243,6 +252,8 @@
         this.physics.add.overlap(player, pointe_gauche, mort, null, this);
 
         this.physics.add.collider(player, ralentisseur, onRalentisseur, null, this);
+
+        this.physics.add.overlap(player, item_heal, heal, null, this);
 
         //Collision PowerUp
         this.physics.add.overlap(player, item_doublejump, unlockDJ, null, this);
@@ -475,6 +486,14 @@
         
     }
 
+    //Gestion Item Heal
+    function heal(player, item_heal) {
+        item_heal.disableBody(true, true);
+        if (health < 99){
+            this.healthMask.x += 33;
+            health += 33;
+        }
+    }
     /* 
     Sound Design
     Dash en upgrade  FLAME VIOLETTE
