@@ -371,11 +371,17 @@
     function onRalentisseur() {
         pDeplacementX = 80;
         pDeplacementY = 105;
+        if (unlockDoubleJump == true && player.body.blocked.down ) {
+            doublejump = true;
+        }
     }
 
     function notRalentisseur() {
         pDeplacementX = 160;
         pDeplacementY = 210;
+        if (unlockDoubleJump == true && player.body.blocked.down) {
+            doublejump = true;
+        }
     }
 
     // Gestion de l'intéraction Joueur Ennemi
@@ -458,7 +464,8 @@
 
     /* 
     Sound Design
-    Dash/DoubleJump en upgrade -> Wall Jump de Base  FLAME VERTE/VIOLETTE
+    Dash en upgrade  FLAME VIOLETTE
+    DOUBLE JUMP FONCTIONNE QUE QUAND APRES UN SAUT DE BASE
     ITEM A RECUP POUR LA VIE FLAMME ROSE
     */
 
