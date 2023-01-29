@@ -262,14 +262,25 @@
     function update(){
 
         // Mouvement du joueur
-        //Gauche
+       
         if (offTouche == false) {
-            if (cursors.left.isDown || controller.left ){ 
-                player.setVelocityX(-pDeplacementX); 
+            //Gauche
+            if(cursors.left.isDown && cursors.shift.isDown){
+                player.setVelocityX(-pDeplacementX*1.5); 
                 player.anims.play('left', true); 
             }
 
-            // Droite 
+            else if (cursors.left.isDown || controller.left ){ 
+                player.setVelocityX(-pDeplacementX); 
+                player.anims.play('left', true); 
+            }
+    
+            // Droite
+            else if(cursors.right.isDown && cursors.shift.isDown){
+                player.setVelocityX(pDeplacementX*1.5); 
+                player.anims.play('right', true); 
+            }
+
             else if (cursors.right.isDown || controller.right){ 
                 player.setVelocityX(pDeplacementX); 
                 player.anims.play('right', true); 
@@ -467,7 +478,6 @@
     /* 
     Sound Design
     Dash en upgrade  FLAME VIOLETTE
-    DOUBLE JUMP FONCTIONNE QUE QUAND APRES UN SAUT DE BASE
     ITEM A RECUP POUR LA VIE FLAMME ROSE
     */
 
