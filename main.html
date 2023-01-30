@@ -330,14 +330,14 @@
             }
 
             //Dash
-            if (cursors.right.isDown && cursors.space.isDown && dash == true) {
+            if (cursors.right.isDown && cursors.space.isDown && dash == true || controller.right && controller.B && dash == true) {
                 offTouche = true;
                 dash = false;
                 setTimeout(cdDash, 2000);
                 setTimeout(blocageTouche, 500);
                 player.setVelocityX(pDeplacementX*3)
             }
-            else if (cursors.left.isDown && cursors.space.isDown && dash == true) {
+            else if (cursors.left.isDown && cursors.space.isDown && dash == true || controller.left && controller.B && dash == true) {
                 offTouche = true;
                 dash = false;
                 setTimeout(cdDash, 2000);
