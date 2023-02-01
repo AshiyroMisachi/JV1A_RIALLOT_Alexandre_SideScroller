@@ -12,511 +12,515 @@
             type: Phaser.AUTO,
             width: 800, height: 800,
             physics: {
-                    default: 'arcade',
-                    arcade: {
+                default: 'arcade',
+                arcade: {
                     gravity: { y: 300 },
                     debug: true
                 }},
-            input:{gamepad:true},
-            scene: {preload: preload, create: create, update: update }
-        };
-
-        game = new Phaser.Game(config);
-        function preload(){
-            //Preload Background + Second Plan
-            this.load.image('Foret', 'assets/BackgroundForet.png');
-            this.load.image('BackgroundGrotte', 'assets/BackgroundGrotte.png');
-            this.load.image('BackgroundDonjon', 'assets/BackgroundDonjon.png');
-            this.load.image('SecondPlanForet', 'assets/SecondPlanForet.png');
-            this.load.image('SecondPlanGrotte', 'assets/SecondPlanGrotte.png');
-            this.load.image('SecondPlanDonjon', 'assets/SecondPlanDonjon.png');
-
-            //Preload Texture Objet
-            this.load.image('TexturePlateformeForet', 'assets/TexturePlateformeForet.png');
-            this.load.image('TexturePlateformeBois', 'assets/TexturePlateformeBois.png');
-            this.load.image('TexturePlateformeGrotte', 'assets/TexturePlateformeGrotte.png');
-            this.load.image('TexturePlateformeDonjon', 'assets/TexturePlateformeDonjon.png');
-            this.load.image('TextureRalentisseur', 'assets/TextureRalentisseur.png');
-            this.load.image('TextureBordureEnnemi', 'assets/TextureBordureEnnemi.png');
-            this.load.image('TextureDoubleJump', 'assets/TextureDoubleJump.png');
-            this.load.image('TextureDash', 'assets/TextureDash.png');
-            this.load.image('TextureHeal', 'assets/TexturePV.png');
-
-            //Preload Texture Ennemi
-            this.load.image('TextureBat', 'assets/Bat.png');
-
-            //Preload Map Tiled
-            this.load.image("Phaser_tuilesdejeu", "assets/TilesetFinal.png");
-            this.load.tilemapTiledJSON("carte", "assets/Level1.json");
-
-            //Preload Perso
-            this.load.spritesheet('perso','assets/perso.png',
-            { frameWidth: 32, frameHeight: 48 });
-
-            //Preload barre de vie
-            this.load.image('CadreVie', 'assets/CadreVie.png');
-            this.load.image('BarreVie', 'assets/BarreVie.png');
-    
-        }
-
-    // Variable Player
-    var player;
-    var health = 99;
-    var pDeplacementX = 160;
-    var pDeplacementY = 210; 
-    var walljump = true;
-
-    //Variable PowerUp
-    var doublejump = false;
-    var unlockDoubleJump = false;
-    var dash = false;
-    var unlockDash = false;
-
-    // Variable Controle
-    var cursors;
-    var controller = false;
-
-    // Variables Autres
-
-    var gameOver = false;
-    var offTouche = false; 
-    var beHit = false;
-    var clignotement = 0;
-
-    function create(){
-        //Affichage backgound + Second Plan
-        this.add.image(800, 800, 'Foret');
-        this.add.image(800,800, 'BackgroundGrotte');
-        this.add.image(800,800, 'BackgroundDonjon');
-        this.add.image(800, 800, 'SecondPlanForet');
-        this.add.image(800, 800, 'SecondPlanGrotte');
-        this.add.image(800, 800, 'SecondPlanDonjon');
-
-
-        //Chargement de la carte
-        const carteDuNiveau = this.add.tilemap("carte");
-
-        //Chargement du jeu de tuiles
-        const tileset = carteDuNiveau.addTilesetImage (
-            "TilesetUpdate",
-            "Phaser_tuilesdejeu"
-        );
-
-        //Chargement des calques
-        
-        const calque_contour = carteDuNiveau.createLayer (
-            "Contour",
-            tileset
-        );
-
-        const calque_spike = carteDuNiveau.createLayer (
-            "Pointe",
-            tileset
-        );
-
-        //Création des Plateformes
-        plateforme_foret = this.physics.add.group();
-        calque_ObjetPlateformeForet = carteDuNiveau.getObjectLayer('ObjetPlateformeForet');
-        calque_ObjetPlateformeForet.objects.forEach( calque_ObjetPlateformeForet => {
-            const POPlateformeForet = plateforme_foret.create( calque_ObjetPlateformeForet.x + 16, calque_ObjetPlateformeForet.y + 3, "TexturePlateformeForet").body.setAllowGravity(false).setImmovable(true);
-        });
-
-        plateforme_bois = this.physics.add.group();
-        calque_ObjetPlateformeBois = carteDuNiveau.getObjectLayer('ObjetPlateformeBois');
-        calque_ObjetPlateformeBois.objects.forEach( calque_ObjetPlateformeBois => {
-            const POPlateformeBois = plateforme_bois.create( calque_ObjetPlateformeBois.x + 16, calque_ObjetPlateformeBois.y + 3, "TexturePlateformeBois").body.setAllowGravity(false).setImmovable(true);
-        });
-        
-        plateforme_grotte = this.physics.add.group();
-        calque_ObjetPlateformeGrotte = carteDuNiveau.getObjectLayer('ObjetPlateformeGrotte');
-        calque_ObjetPlateformeGrotte.objects.forEach( calque_ObjetPlateformeGrotte => {
-            const POPlateformeGrotte = plateforme_grotte.create( calque_ObjetPlateformeGrotte.x + 16, calque_ObjetPlateformeGrotte.y + 3, "TexturePlateformeGrotte").body.setAllowGravity(false).setImmovable(true);
-        });
-
-        plateforme_donjon = this.physics.add.group();
-        calque_ObjetPlateformeDonjon = carteDuNiveau.getObjectLayer('ObjetPlateformeDonjon');
-        calque_ObjetPlateformeDonjon.objects.forEach( calque_ObjetPlateformeDonjon => {
-            const POPlateformeDonjon = plateforme_donjon.create( calque_ObjetPlateformeDonjon.x + 16, calque_ObjetPlateformeDonjon.y + 3, "TexturePlateformeDonjon").body.setAllowGravity(false).setImmovable(true);
-        });
-
-        //Création Ralentisseur
-        ralentisseur = this.physics.add.group();
-        calque_ObjetRalentisseur = carteDuNiveau.getObjectLayer('ObjetRalentisseur');
-        calque_ObjetRalentisseur.objects.forEach( calque_ObjetRalentisseur => {
-            const PORalentisseur = ralentisseur.create( calque_ObjetRalentisseur.x + 16, calque_ObjetRalentisseur.y + 15, "TextureRalentisseur").body.setAllowGravity(false).setImmovable(true);
-        });
-
-        //Création Ennemi Horizontal
-        bat = this.physics.add.group();
-        calque_EnnemiHorizontal = carteDuNiveau.getObjectLayer('EnnemiHorizontal');
-        calque_EnnemiHorizontal.objects.forEach( calque_EnnemiHorizontal => {
-            const EEnnemiHorizontal = bat.create( calque_EnnemiHorizontal.x + 16, calque_EnnemiHorizontal.y + 16, "TextureBat").body.setAllowGravity(false).setBounce(1);
-        });
-        bat.setVelocity(0, 150);
-
-        //Création des Bordures délimitant les déplacements des Ennemis
-        bordure_ennemi = this.physics.add.group();
-        calque_BordureEnnemi = carteDuNiveau.getObjectLayer('BordureEnnemi');
-        calque_BordureEnnemi.objects.forEach( calque_BordureEnnemi => {
-            const EBordureEnnemi = bordure_ennemi.create( calque_BordureEnnemi.x + 16, calque_BordureEnnemi.y +16, "TextureBordureEnnemi").body.setAllowGravity(false).setImmovable(true);
-        });
-
-        //Création PowerUp
-        item_doublejump = this.physics.add.group();
-        calque_ObjetDoubleJump = carteDuNiveau.getObjectLayer('ObjetDoubleJump');
-        calque_ObjetDoubleJump.objects.forEach( calque_ObjetDoubleJump => {
-            const PODoubleJump = item_doublejump.create( calque_ObjetDoubleJump.x + 16, calque_ObjetDoubleJump.y +16, "TextureDoubleJump").body.setAllowGravity(false);
-        });
-
-        item_dash = this.physics.add.group();
-        calque_ObjetDash = carteDuNiveau.getObjectLayer('ObjetDash');
-        calque_ObjetDash.objects.forEach ( calque_ObjetDash => {
-            const PODash = item_dash.create( calque_ObjetDash.x + 16, calque_ObjetDash.y +16, "TextureDash").body.setAllowGravity(false);
-        });
-
-        //Création Item Heal
-        item_heal = this.physics.add.group();
-        calque_ObjetHeal = carteDuNiveau.getObjectLayer('ObjetHeal');
-        calque_ObjetHeal.objects.forEach( calque_ObjetHeal => {
-            const POHeal = item_heal.create( calque_ObjetHeal.x + 16, calque_ObjetHeal.y + 16, "TextureHeal").body.setAllowGravity(false);
-        })
-
-        //Création de la zone de fin
-        block_end = this.physics.add.group();
-        calque_ObjetEnd = carteDuNiveau.getObjectLayer('ObjetEnd');
-        calque_ObjetEnd.objects.forEach( calque_ObjetEnd => {
-            const PEnd = block_end.create ( calque_ObjetEnd.x + 16, calque_ObjetEnd.y +16, "TextureBordureEnnemi").body.setAllowGravity(false);
-        })
-
-        //definition des tuiles solides
-        calque_contour.setCollisionByProperty ({ estSolide: true });
-        calque_spike.setCollisionByProperty ({ estSolide: true });
-
-        //creation perso
-        player = this.physics.add.sprite(800, 1472, 'perso');
-        player.setCollideWorldBounds(true);
-
-        this.anims.create({
-            key: 'left',
-            frames: this.anims.generateFrameNumbers('perso', {start:0,end:3}),
-            frameRate: 10,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'turn',
-            frames: [ { key: 'perso', frame: 4 } ],
-            frameRate: 20
-        });
-        this.anims.create({
-            key: 'right',
-            frames: this.anims.generateFrameNumbers('perso', {start:5,end:8}),
-            frameRate: 10,
-            repeat: -1
-        });
-
-        //Recuperation Controle Clavier
-        cursors = this.input.keyboard.createCursorKeys();
-        //Activation Manette
-        this.input.gamepad.once('connected', function (pad) {
-            controller = pad;
-        });
-
-        //Gestion Caméra
-        this.physics.world.setBounds(0, 0, 1600, 1600);
-        this.cameras.main.setBounds(0, 0, 1600, 1600);
-        this.cameras.main.startFollow(player);  
-
-        //Création Collision Player
-        this.physics.add.collider(player, calque_contour, notRalentisseur, null, this);
-        this.physics.add.overlap(player, bat, collisionEnnemi, getHit, this);
-        this.physics.add.overlap(player, bat, verificationVie, null, this);
-        this.physics.add.collider(player, calque_spike, mort, null, this);
-        this.physics.add.overlap(player, block_end, victory, null, this);
-        
-        //Création Collision Objet
-        this.physics.add.collider(player, plateforme_bois, notRalentisseur, null, this);
-        this.physics.add.collider(player, plateforme_donjon, notRalentisseur, null, this);
-        this.physics.add.collider(player, plateforme_foret, notRalentisseur, null, this);
-        this.physics.add.collider(player, plateforme_grotte, notRalentisseur, null, this);
-
-        this.physics.add.collider(player, ralentisseur, onRalentisseur, null, this);
-
-        this.physics.add.overlap(player, item_heal, heal, null, this);
-
-        //Collision PowerUp
-        this.physics.add.overlap(player, item_doublejump, unlockDJ, null, this);
-        this.physics.add.overlap(player, item_dash, unlockD, null, this);
-
-        //Colision ennemi
-        this.physics.add.collider(bat, calque_contour);
-        this.physics.add.collider(bat, bordure_ennemi);
-
-        //Création Barre de vie
-        let healthContainer = this.add.sprite(80, 20, "CadreVie").setScrollFactor(0);
-        let healthBar = this.add.sprite(healthContainer.x, healthContainer.y, "BarreVie").setScrollFactor(0);
-        this.healthMask = this.add.sprite(healthBar.x, healthBar.y, "BarreVie").setScrollFactor(0);
-        this.healthMask.visible = false;
-        healthBar.mask = new Phaser.Display.Masks.BitmapMask(this, this.healthMask);
-    }  
-    
-    function update(){
-
-        // Mouvement du joueur
-        if (offTouche == false) {
-            //Gauche
-            if(cursors.left.isDown && cursors.shift.isDown || controller.left && controller.A ){
-                player.setVelocityX(-pDeplacementX*1.5); 
-                player.anims.play('left', true); 
-            }
-
-            else if (cursors.left.isDown || controller.left ){ 
-                player.setVelocityX(-pDeplacementX); 
-                player.anims.play('left', true); 
-            }
-    
-            // Droite
-            else if(cursors.right.isDown && cursors.shift.isDown || controller.right && controller.A ){
-                player.setVelocityX(pDeplacementX*1.5); 
-                player.anims.play('right', true); 
-            }
-
-            else if (cursors.right.isDown || controller.right){ 
-                player.setVelocityX(pDeplacementX); 
-                player.anims.play('right', true); 
-            }
-
-            // Immobile
-            else{ 
-                player.setVelocityX(0); 
-                player.anims.play('turn'); 
-            }
-            // Saut
-            if (cursors.up.isDown && player.body.blocked.down ||  controller.up && player.body.blocked.down){
-                console.log("SAUT CLASSIQUE");
-                player.setVelocityY(-pDeplacementY); 
-                setTimeout(cdDJ, 500);
+                input:{gamepad:true},
+                scene: {preload: preload, create: create, update: update }
+            };
+            
+            game = new Phaser.Game(config);
+            function preload(){
+                //Preload Background + Second Plan
+                this.load.image('Foret', 'assets/BackgroundForet.png');
+                this.load.image('BackgroundGrotte', 'assets/BackgroundGrotte.png');
+                this.load.image('BackgroundDonjon', 'assets/BackgroundDonjon.png');
+                this.load.image('SecondPlanForet', 'assets/SecondPlanForet.png');
+                this.load.image('SecondPlanGrotte', 'assets/SecondPlanGrotte.png');
+                this.load.image('SecondPlanDonjon', 'assets/SecondPlanDonjon.png');
+                
+                //Preload Texture Objet
+                this.load.image('TexturePlateformeForet', 'assets/TexturePlateformeForet.png');
+                this.load.image('TexturePlateformeBois', 'assets/TexturePlateformeBois.png');
+                this.load.image('TexturePlateformeGrotte', 'assets/TexturePlateformeGrotte.png');
+                this.load.image('TexturePlateformeDonjon', 'assets/TexturePlateformeDonjon.png');
+                this.load.image('TextureRalentisseur', 'assets/TextureRalentisseur.png');
+                this.load.image('TextureBordureEnnemi', 'assets/TextureBordureEnnemi.png');
+                this.load.image('TextureDoubleJump', 'assets/TextureDoubleJump.png');
+                this.load.image('TextureDash', 'assets/TextureDash.png');
+                this.load.image('TextureHeal', 'assets/TexturePV.png');
+                
+                //Preload Texture Ennemi
+                this.load.image('TextureBat', 'assets/Bat.png');
+                
+                //Preload Map Tiled
+                this.load.image("Phaser_tuilesdejeu", "assets/TilesetFinal.png");
+                this.load.tilemapTiledJSON("carte", "assets/Level1.json");
+                
+                //Preload Perso
+                this.load.spritesheet('perso','assets/perso.png',
+                { frameWidth: 32, frameHeight: 48 });
+                this.load.spritesheet('perso_end', 'assets/PersoEnd.png',
+                {frameWidth : 28, frameHeight: 63});
+                
+                
+                //Preload barre de vie
+                this.load.image('CadreVie', 'assets/CadreVie.png');
+                this.load.image('BarreVie', 'assets/BarreVie.png');
+                
             }
             
-            //Wall Jump
-            if (cursors.up.isDown && player.body.blocked.right || controller.up && player.body.blocked.right) {
-                if (walljump == true) {
-                    walljump = false;
-                    offTouche = true;
-                    setTimeout(cdWallJump, 500);
-                    setTimeout(blocageTouche, 200);
+            // Variable Player
+            var player;
+            var health = 99;
+            var pDeplacementX = 160;
+            var pDeplacementY = 210; 
+            var walljump = true;
+            
+            //Variable PowerUp
+            var doublejump = false;
+            var unlockDoubleJump = false;
+            var dash = false;
+            var unlockDash = false;
+            
+            // Variable Controle
+            var cursors;
+            var controller = false;
+            
+            // Variables Autres
+            
+            var gameOver = false;
+            var offTouche = false; 
+            var beHit = false;
+            var clignotement = 0;
+            
+            function create(){
+                //Affichage backgound + Second Plan
+                this.add.image(800, 800, 'Foret');
+                this.add.image(800,800, 'BackgroundGrotte');
+                this.add.image(800,800, 'BackgroundDonjon');
+                this.add.image(800, 800, 'SecondPlanForet');
+                this.add.image(800, 800, 'SecondPlanGrotte');
+                this.add.image(800, 800, 'SecondPlanDonjon');
+                
+                
+                //Chargement de la carte
+                const carteDuNiveau = this.add.tilemap("carte");
+                
+                //Chargement du jeu de tuiles
+                const tileset = carteDuNiveau.addTilesetImage (
+                "TilesetUpdate",
+                "Phaser_tuilesdejeu"
+                );
+                
+                //Chargement des calques
+                
+                const calque_contour = carteDuNiveau.createLayer (
+                "Contour",
+                tileset
+                );
+                
+                const calque_spike = carteDuNiveau.createLayer (
+                "Pointe",
+                tileset
+                );
+                
+                //Création des Plateformes
+                plateforme_foret = this.physics.add.group();
+                calque_ObjetPlateformeForet = carteDuNiveau.getObjectLayer('ObjetPlateformeForet');
+                calque_ObjetPlateformeForet.objects.forEach( calque_ObjetPlateformeForet => {
+                    const POPlateformeForet = plateforme_foret.create( calque_ObjetPlateformeForet.x + 16, calque_ObjetPlateformeForet.y + 3, "TexturePlateformeForet").body.setAllowGravity(false).setImmovable(true);
+                });
+                
+                plateforme_bois = this.physics.add.group();
+                calque_ObjetPlateformeBois = carteDuNiveau.getObjectLayer('ObjetPlateformeBois');
+                calque_ObjetPlateformeBois.objects.forEach( calque_ObjetPlateformeBois => {
+                    const POPlateformeBois = plateforme_bois.create( calque_ObjetPlateformeBois.x + 16, calque_ObjetPlateformeBois.y + 3, "TexturePlateformeBois").body.setAllowGravity(false).setImmovable(true);
+                });
+                
+                plateforme_grotte = this.physics.add.group();
+                calque_ObjetPlateformeGrotte = carteDuNiveau.getObjectLayer('ObjetPlateformeGrotte');
+                calque_ObjetPlateformeGrotte.objects.forEach( calque_ObjetPlateformeGrotte => {
+                    const POPlateformeGrotte = plateforme_grotte.create( calque_ObjetPlateformeGrotte.x + 16, calque_ObjetPlateformeGrotte.y + 3, "TexturePlateformeGrotte").body.setAllowGravity(false).setImmovable(true);
+                });
+                
+                plateforme_donjon = this.physics.add.group();
+                calque_ObjetPlateformeDonjon = carteDuNiveau.getObjectLayer('ObjetPlateformeDonjon');
+                calque_ObjetPlateformeDonjon.objects.forEach( calque_ObjetPlateformeDonjon => {
+                    const POPlateformeDonjon = plateforme_donjon.create( calque_ObjetPlateformeDonjon.x + 16, calque_ObjetPlateformeDonjon.y + 3, "TexturePlateformeDonjon").body.setAllowGravity(false).setImmovable(true);
+                });
+                
+                //Création Ralentisseur
+                ralentisseur = this.physics.add.group();
+                calque_ObjetRalentisseur = carteDuNiveau.getObjectLayer('ObjetRalentisseur');
+                calque_ObjetRalentisseur.objects.forEach( calque_ObjetRalentisseur => {
+                    const PORalentisseur = ralentisseur.create( calque_ObjetRalentisseur.x + 16, calque_ObjetRalentisseur.y + 15, "TextureRalentisseur").body.setAllowGravity(false).setImmovable(true);
+                });
+                
+                //Création Ennemi Horizontal
+                bat = this.physics.add.group();
+                calque_EnnemiHorizontal = carteDuNiveau.getObjectLayer('EnnemiHorizontal');
+                calque_EnnemiHorizontal.objects.forEach( calque_EnnemiHorizontal => {
+                    const EEnnemiHorizontal = bat.create( calque_EnnemiHorizontal.x + 16, calque_EnnemiHorizontal.y + 16, "TextureBat").body.setAllowGravity(false).setBounce(1);
+                });
+                bat.setVelocity(0, 150);
+                
+                //Création des Bordures délimitant les déplacements des Ennemis
+                bordure_ennemi = this.physics.add.group();
+                calque_BordureEnnemi = carteDuNiveau.getObjectLayer('BordureEnnemi');
+                calque_BordureEnnemi.objects.forEach( calque_BordureEnnemi => {
+                    const EBordureEnnemi = bordure_ennemi.create( calque_BordureEnnemi.x + 16, calque_BordureEnnemi.y +16, "TextureBordureEnnemi").body.setAllowGravity(false).setImmovable(true);
+                });
+                
+                //Création PowerUp
+                item_doublejump = this.physics.add.group();
+                calque_ObjetDoubleJump = carteDuNiveau.getObjectLayer('ObjetDoubleJump');
+                calque_ObjetDoubleJump.objects.forEach( calque_ObjetDoubleJump => {
+                    const PODoubleJump = item_doublejump.create( calque_ObjetDoubleJump.x + 16, calque_ObjetDoubleJump.y +16, "TextureDoubleJump").body.setAllowGravity(false);
+                });
+                
+                item_dash = this.physics.add.group();
+                calque_ObjetDash = carteDuNiveau.getObjectLayer('ObjetDash');
+                calque_ObjetDash.objects.forEach ( calque_ObjetDash => {
+                    const PODash = item_dash.create( calque_ObjetDash.x + 16, calque_ObjetDash.y +16, "TextureDash").body.setAllowGravity(false);
+                });
+                
+                //Création Item Heal
+                item_heal = this.physics.add.group();
+                calque_ObjetHeal = carteDuNiveau.getObjectLayer('ObjetHeal');
+                calque_ObjetHeal.objects.forEach( calque_ObjetHeal => {
+                    const POHeal = item_heal.create( calque_ObjetHeal.x + 16, calque_ObjetHeal.y + 16, "TextureHeal").body.setAllowGravity(false);
+                })
+                
+                //Création de la zone de fin
+                block_end = this.physics.add.group();
+                calque_ObjetEnd = carteDuNiveau.getObjectLayer('ObjetEnd');
+                calque_ObjetEnd.objects.forEach( calque_ObjetEnd => {
+                    const PEnd = block_end.create ( calque_ObjetEnd.x + 16, calque_ObjetEnd.y +16, "TextureBordureEnnemi").body.setAllowGravity(false);
+                })
+                
+                //definition des tuiles solides
+                calque_contour.setCollisionByProperty ({ estSolide: true });
+                calque_spike.setCollisionByProperty ({ estSolide: true });
+                
+                //creation perso
+                player = this.physics.add.sprite(800, 1472, 'perso_end');
+                player.setCollideWorldBounds(true);
+                
+                this.anims.create({
+                    key: 'left',
+                    frames: this.anims.generateFrameNumbers('perso_end', {start:0,end:3}),
+                    frameRate: 10,
+                    repeat: -1
+                });
+                this.anims.create({
+                    key: 'turn',
+                    frames: [ { key: 'perso_end', frame: 4 } ],
+                    frameRate: 20
+                });
+                this.anims.create({
+                    key: 'right',
+                    frames: this.anims.generateFrameNumbers('perso_end', {start:5,end:8}),
+                    frameRate: 10,
+                    repeat: -1
+                });
+                
+                //Recuperation Controle Clavier
+                cursors = this.input.keyboard.createCursorKeys();
+                //Activation Manette
+                this.input.gamepad.once('connected', function (pad) {
+                    controller = pad;
+                });
+                
+                //Gestion Caméra
+                this.physics.world.setBounds(0, 0, 1600, 1600);
+                this.cameras.main.setBounds(0, 0, 1600, 1600);
+                this.cameras.main.startFollow(player);  
+                
+                //Création Collision Player
+                this.physics.add.collider(player, calque_contour, notRalentisseur, null, this);
+                this.physics.add.overlap(player, bat, collisionEnnemi, getHit, this);
+                this.physics.add.overlap(player, bat, verificationVie, null, this);
+                this.physics.add.collider(player, calque_spike, mort, null, this);
+                this.physics.add.overlap(player, block_end, victory, null, this);
+                
+                //Création Collision Objet
+                this.physics.add.collider(player, plateforme_bois, notRalentisseur, null, this);
+                this.physics.add.collider(player, plateforme_donjon, notRalentisseur, null, this);
+                this.physics.add.collider(player, plateforme_foret, notRalentisseur, null, this);
+                this.physics.add.collider(player, plateforme_grotte, notRalentisseur, null, this);
+                
+                this.physics.add.collider(player, ralentisseur, onRalentisseur, null, this);
+                
+                this.physics.add.overlap(player, item_heal, heal, null, this);
+                
+                //Collision PowerUp
+                this.physics.add.overlap(player, item_doublejump, unlockDJ, null, this);
+                this.physics.add.overlap(player, item_dash, unlockD, null, this);
+                
+                //Colision ennemi
+                this.physics.add.collider(bat, calque_contour);
+                this.physics.add.collider(bat, bordure_ennemi);
+                
+                //Création Barre de vie
+                let healthContainer = this.add.sprite(80, 20, "CadreVie").setScrollFactor(0);
+                let healthBar = this.add.sprite(healthContainer.x, healthContainer.y, "BarreVie").setScrollFactor(0);
+                this.healthMask = this.add.sprite(healthBar.x, healthBar.y, "BarreVie").setScrollFactor(0);
+                this.healthMask.visible = false;
+                healthBar.mask = new Phaser.Display.Masks.BitmapMask(this, this.healthMask);
+            }  
+            
+            function update(){
+                
+                // Mouvement du joueur
+                if (offTouche == false) {
+                    //Gauche
+                    if(cursors.left.isDown && cursors.shift.isDown || controller.left && controller.A ){
+                        player.setVelocityX(-pDeplacementX*1.5); 
+                        player.anims.play('left', true); 
+                    }
+                    
+                    else if (cursors.left.isDown || controller.left ){ 
+                        player.setVelocityX(-pDeplacementX); 
+                        player.anims.play('left', true); 
+                    }
+                    
+                    // Droite
+                    else if(cursors.right.isDown && cursors.shift.isDown || controller.right && controller.A ){
+                        player.setVelocityX(pDeplacementX*1.5); 
+                        player.anims.play('right', true); 
+                    }
+                    
+                    else if (cursors.right.isDown || controller.right){ 
+                        player.setVelocityX(pDeplacementX); 
+                        player.anims.play('right', true); 
+                    }
+                    
+                    // Immobile
+                    else{ 
+                        player.setVelocityX(0); 
+                        player.anims.play('turn'); 
+                    }
+                    // Saut
+                    if (cursors.up.isDown && player.body.blocked.down ||  controller.up && player.body.blocked.down){
+                        console.log("SAUT CLASSIQUE");
+                        player.setVelocityY(-pDeplacementY); 
+                        setTimeout(cdDJ, 500);
+                    }
+                    
+                    //Wall Jump
+                    if (cursors.up.isDown && player.body.blocked.right || controller.up && player.body.blocked.right) {
+                        if (walljump == true) {
+                            walljump = false;
+                            offTouche = true;
+                            setTimeout(cdWallJump, 500);
+                            setTimeout(blocageTouche, 200);
+                            player.setVelocityY(-pDeplacementY);
+                            player.setVelocityX(-50);
+                            setTimeout(cdDJ, 500);
+                        }
+                    }
+                    
+                    if (cursors.up.isDown && player.body.blocked.left || controller.up && player.body.blocked.left) {
+                        if (walljump == true) {
+                            walljump = false;
+                            offTouche = true;
+                            setTimeout(cdWallJump, 500);
+                            setTimeout(blocageTouche, 200);
+                            player.setVelocityY(-pDeplacementY);
+                            player.setVelocityX(50);
+                            setTimeout(cdDJ, 500);
+                        }
+                    }
+                    
+                    //Double Jump
+                    if ( (cursors.up.isDown && doublejump == true && player.body.blocked.none) || (controller.up && doublejump == true && player.body.blocked.none) ) {
+                        console.log("DOUBLE JUMP");
+                        player.setVelocityY(-pDeplacementY);
+                        doublejump = false;
+                    }
+                    
+                    //Dash
+                    if (cursors.right.isDown && cursors.space.isDown && dash == true || controller.right && controller.B && dash == true) {
+                        offTouche = true;
+                        dash = false;
+                        setTimeout(cdDash, 2000);
+                        setTimeout(blocageTouche, 500);
+                        player.setVelocityX(pDeplacementX*3)
+                    }
+                    else if (cursors.left.isDown && cursors.space.isDown && dash == true || controller.left && controller.B && dash == true) {
+                        offTouche = true;
+                        dash = false;
+                        setTimeout(cdDash, 2000);
+                        setTimeout(blocageTouche, 500);
+                        player.setVelocityX(-pDeplacementX*3)
+                    }
+                }
+            }
+            
+            //Gestion Blocage Touche
+            function blocageTouche() {
+                offTouche = false;
+            }
+            
+            // Gestion du Wall Jump
+            function cdWallJump() {
+                walljump = true;
+            }
+            
+            //Gestion Du DoubleJump
+            function unlockDJ(player, item_doublejump) {
+                item_doublejump.disableBody(true, true);
+                unlockDoubleJump = true;
+            }
+            
+            function cdDJ() {
+                if (unlockDoubleJump == true ) {
+                    doublejump = true;
+                }
+            }
+            
+            //Gestion du Dash
+            function unlockD(player, item_dash) {
+                item_dash.disableBody(true, true);
+                unlockDash = true;
+                dash = true;
+            }
+            
+            function cdDash() {
+                if (unlockDash == true) {
+                    dash = true;
+                }
+            }
+            
+            // Verification de la vie du joueur pour savoir si il est censé être mort ou non
+            function verificationVie(){
+                console.log(health)
+                if (health  == 0){
+                    console.log("Tmort");
+                    player.setTint(0xff0000);
+                    player.anims.play('turn');
+                    this.physics.pause();
+                }
+            }
+            
+            // Gestion de la mort du personnage
+            function mort() {
+                console.log("Tmort");
+                this.physics.pause();
+                player.setTint(0xff0000);
+                player.anims.play('turn');
+            }
+            
+            //Gestion Victoire
+            function victory() {
+                console.log("YOU WIN");
+                this.physics.pause();
+                player.setTint(0x008000);
+                player.anims.play('turn');
+            }
+            
+            //Gestion du ralentissement sur les ralentisseurs
+            function onRalentisseur() {
+                pDeplacementX = 80;
+                pDeplacementY = 105;
+                if (unlockDoubleJump == true && player.body.blocked.down ) {
+                    doublejump = true;
+                }
+            }
+            
+            function notRalentisseur() {
+                pDeplacementX = 160;
+                pDeplacementY = 210;
+                if (unlockDoubleJump == true && player.body.blocked.down) {
+                    doublejump = true;
+                }
+            }
+            
+            // Gestion de l'intéraction Joueur Ennemi
+            function collisionEnnemi(player, bat) {
+                if (player.body.touching.down) {
+                    console.log("kill ennemy");
+                    bat.disableBody(true, true);
                     player.setVelocityY(-pDeplacementY);
+                }
+                else if (player.body.touching.right) {
+                    console.log("paf droite");
                     player.setVelocityX(-50);
-                    setTimeout(cdDJ, 500);
-                }
-            }
-
-            if (cursors.up.isDown && player.body.blocked.left || controller.up && player.body.blocked.left) {
-                if (walljump == true) {
-                    walljump = false;
+                    beHit = true;
+                    setTimeout(ableHit, 500); 
                     offTouche = true;
-                    setTimeout(cdWallJump, 500);
                     setTimeout(blocageTouche, 200);
-                    player.setVelocityY(-pDeplacementY);
+                    this.healthMask.x -= 33;
+                    health -= 33;
+                    pinvisible();
+                }
+                else if (player.body.touching.left) {
+                    console.log("paf gauche");
                     player.setVelocityX(50);
-                    setTimeout(cdDJ, 500);
+                    beHit = true;
+                    setTimeout(ableHit, 500); 
+                    offTouche = true;
+                    setTimeout(blocageTouche, 200);
+                    this.healthMask.x -= 33;
+                    health -= 33;
+                    pinvisible();
+                }
+                else {
+                    console.log("paf mid");
+                    player.setVelocityX(50);
+                    beHit = true;
+                    setTimeout(ableHit, 500); 
+                    offTouche = true;
+                    setTimeout(blocageTouche, 200);
+                    this.healthMask.x -= 33;
+                    health -= 33;
+                    pinvisible();
+                }
+                
+            }
+            
+            // Gestion des frames d'invulnérabilité
+            function getHit() {
+                if ( beHit == false ) {
+                    return true
+                }
+                else {
+                    return false
                 }
             }
-
-            //Double Jump
-            if ( (cursors.up.isDown && doublejump == true && player.body.blocked.none) || (controller.up && doublejump == true && player.body.blocked.none) ) {
-                console.log("DOUBLE JUMP");
-                player.setVelocityY(-pDeplacementY);
-                doublejump = false;
-            }
-
-            //Dash
-            if (cursors.right.isDown && cursors.space.isDown && dash == true || controller.right && controller.B && dash == true) {
-                offTouche = true;
-                dash = false;
-                setTimeout(cdDash, 2000);
-                setTimeout(blocageTouche, 500);
-                player.setVelocityX(pDeplacementX*3)
-            }
-            else if (cursors.left.isDown && cursors.space.isDown && dash == true || controller.left && controller.B && dash == true) {
-                offTouche = true;
-                dash = false;
-                setTimeout(cdDash, 2000);
-                setTimeout(blocageTouche, 500);
-                player.setVelocityX(-pDeplacementX*3)
-            }
-        }
-    }
-
-    //Gestion Blocage Touche
-    function blocageTouche() {
-        offTouche = false;
-    }
-
-    // Gestion du Wall Jump
-    function cdWallJump() {
-        walljump = true;
-    }
-
-    //Gestion Du DoubleJump
-    function unlockDJ(player, item_doublejump) {
-        item_doublejump.disableBody(true, true);
-        unlockDoubleJump = true;
-    }
-
-    function cdDJ() {
-        if (unlockDoubleJump == true ) {
-            doublejump = true;
-        }
-    }
-
-    //Gestion du Dash
-    function unlockD(player, item_dash) {
-        item_dash.disableBody(true, true);
-        unlockDash = true;
-        dash = true;
-    }
-
-    function cdDash() {
-        if (unlockDash == true) {
-            dash = true;
-        }
-    }
-
-    // Verification de la vie du joueur pour savoir si il est censé être mort ou non
-    function verificationVie(){
-        console.log(health)
-        if (health  == 0){
-            console.log("Tmort");
-            player.setTint(0xff0000);
-            player.anims.play('turn');
-            this.physics.pause();
-        }
-    }
-
-    // Gestion de la mort du personnage
-    function mort() {
-        console.log("Tmort");
-        this.physics.pause();
-        player.setTint(0xff0000);
-        player.anims.play('turn');
-    }
-
-    //Gestion Victoire
-    function victory() {
-        console.log("YOU WIN");
-        this.physics.pause();
-        player.setTint(0x008000);
-        player.anims.play('turn');
-    }
-
-    //Gestion du ralentissement sur les ralentisseurs
-    function onRalentisseur() {
-        pDeplacementX = 80;
-        pDeplacementY = 105;
-        if (unlockDoubleJump == true && player.body.blocked.down ) {
-            doublejump = true;
-        }
-    }
-
-    function notRalentisseur() {
-        pDeplacementX = 160;
-        pDeplacementY = 210;
-        if (unlockDoubleJump == true && player.body.blocked.down) {
-            doublejump = true;
-        }
-    }
-
-    // Gestion de l'intéraction Joueur Ennemi
-    function collisionEnnemi(player, bat) {
-        if (player.body.touching.down) {
-            console.log("kill ennemy");
-            bat.disableBody(true, true);
-            player.setVelocityY(-pDeplacementY);
-        }
-        else if (player.body.touching.right) {
-            console.log("paf droite");
-            player.setVelocityX(-50);
-            beHit = true;
-            setTimeout(ableHit, 500); 
-            offTouche = true;
-            setTimeout(blocageTouche, 200);
-            this.healthMask.x -= 33;
-            health -= 33;
-            pinvisible();
-        }
-        else if (player.body.touching.left) {
-            console.log("paf gauche");
-            player.setVelocityX(50);
-            beHit = true;
-            setTimeout(ableHit, 500); 
-            offTouche = true;
-            setTimeout(blocageTouche, 200);
-            this.healthMask.x -= 33;
-            health -= 33;
-            pinvisible();
-        }
-        else {
-            console.log("paf mid");
-            player.setVelocityX(50);
-            beHit = true;
-            setTimeout(ableHit, 500); 
-            offTouche = true;
-            setTimeout(blocageTouche, 200);
-            this.healthMask.x -= 33;
-            health -= 33;
-            pinvisible();
-        }
             
-    }
-
-    // Gestion des frames d'invulnérabilité
-    function getHit() {
-        if ( beHit == false ) {
-            return true
-        }
-        else {
-            return false
-        }
-    }
-
-    function ableHit() {
-        beHit = false;
-        console.log("Peut se faire touché");
-    }
-
-    function pinvisible() {
-        console.log("invisible");
-        this.player.visible = false;
-        setTimeout(pvisible, 100);
-    }
-
-    function pvisible() {
-        if (clignotement < 2) {
-            console.log("visible");
-            this.player.visible = true;
-            setTimeout(pinvisible, 100);   
-            clignotement += 1;
-        }
-        else {
-            this.player.visible = true;
-            clignotement = 0;
-        }
-        
-    }
-
-    //Gestion Item Heal
-    function heal(player, item_heal) {
-        item_heal.disableBody(true, true);
-        if (health < 99){
-            this.healthMask.x += 33;
-            health += 33;
-        }
-    }
-
-    /* 
-    Sound Design
-    */
-
-    </script>
-</body>
-</html>
+            function ableHit() {
+                beHit = false;
+                console.log("Peut se faire touché");
+            }
+            
+            function pinvisible() {
+                console.log("invisible");
+                this.player.visible = false;
+                setTimeout(pvisible, 100);
+            }
+            
+            function pvisible() {
+                if (clignotement < 2) {
+                    console.log("visible");
+                    this.player.visible = true;
+                    setTimeout(pinvisible, 100);   
+                    clignotement += 1;
+                }
+                else {
+                    this.player.visible = true;
+                    clignotement = 0;
+                }
+                
+            }
+            
+            //Gestion Item Heal
+            function heal(player, item_heal) {
+                item_heal.disableBody(true, true);
+                if (health < 99){
+                    this.healthMask.x += 33;
+                    health += 33;
+                }
+            }
+            
+            /* 
+            Sound Design
+            */
+            
+        </script>
+    </body>
+    </html>
+    
