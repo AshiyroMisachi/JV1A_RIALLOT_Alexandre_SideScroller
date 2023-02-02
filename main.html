@@ -343,15 +343,17 @@
                         offTouche = true;
                         dash = false;
                         setTimeout(cdDash, 2000);
-                        setTimeout(blocageTouche, 500);
-                        player.setVelocityX(pDeplacementX*3)
+                        setTimeout(blocageTouche, 100);
+                        player.setVelocityX(pDeplacementX*6)
+                        setTimeout(resetDash, 100);
                     }
                     else if (cursors.left.isDown && cursors.space.isDown && dash == true || controller.left && controller.B && dash == true) {
                         offTouche = true;
                         dash = false;
                         setTimeout(cdDash, 2000);
-                        setTimeout(blocageTouche, 500);
-                        player.setVelocityX(-pDeplacementX*3)
+                        setTimeout(blocageTouche, 100);
+                        player.setVelocityX(-pDeplacementX*6)
+                        setTimeout(resetDash, 100);
                     }
                 }
             }
@@ -391,6 +393,9 @@
                 }
             }
             
+            function resetDash(player) {
+                player.setVelocityX(0);
+            }
             // Verification de la vie du joueur pour savoir si il est censé être mort ou non
             function verificationVie(){
                 console.log(health)
