@@ -51,7 +51,7 @@
                 
                 //Preload Perso
                 this.load.spritesheet('perso_end', 'assets/PersoEnd.png',
-                {frameWidth : 28, frameHeight: 63});
+                {frameWidth : 27, frameHeight: 63});
                 
                 
                 //Preload barre de vie
@@ -261,6 +261,14 @@
             }  
             
             function update(){
+                //Gestion Restart si GameOver
+                if (gameOver == true){
+                    gameOver = false;
+                    unlockDash = false;
+                    unlockDoubleJump = false;
+                    health = 99;
+                    this.scene.restart();
+                }
                 
                 // Mouvement du joueur
                 if (offTouche == false) {
@@ -391,6 +399,7 @@
                     player.setTint(0xff0000);
                     player.anims.play('turn');
                     this.physics.pause();
+                    setTimeout(restart, 2000);
                 }
             }
             
@@ -400,6 +409,12 @@
                 this.physics.pause();
                 player.setTint(0xff0000);
                 player.anims.play('turn');
+                setTimeout(restart, 2000);
+            }
+
+            //Gestion Restart Game
+            function restart() {
+                gameOver = true;
             }
             
             //Gestion Victoire
