@@ -21,7 +21,7 @@
                 scene: {preload: preload, create: create, update: update }
             };
             
-            game = new Phaser.Game(config);
+            new Phaser.Game(config);
             function preload(){
                 //Preload Background + Second Plan
                 this.load.image('Foret', 'assets/BackgroundForet.png');
@@ -53,11 +53,9 @@
                 this.load.spritesheet('perso_end', 'assets/PersoEnd.png',
                 {frameWidth : 27, frameHeight: 63});
                 
-                
                 //Preload barre de vie
                 this.load.image('CadreVie', 'assets/CadreVie.png');
                 this.load.image('BarreVie', 'assets/BarreVie.png');
-                
             }
             
             // Variable Player
@@ -78,7 +76,6 @@
             var controller = false;
             
             // Variables Autres
-            
             var gameOver = false;
             var offTouche = false; 
             var beHit = false;
@@ -92,7 +89,6 @@
                 this.add.image(800, 800, 'SecondPlanForet');
                 this.add.image(800, 800, 'SecondPlanGrotte');
                 this.add.image(800, 800, 'SecondPlanDonjon');
-                
                 
                 //Chargement de la carte
                 const carteDuNiveau = this.add.tilemap("carte");
@@ -345,7 +341,6 @@
                         setTimeout(cdDash, 2000);
                         setTimeout(blocageTouche, 100);
                         player.setVelocityX(pDeplacementX*6)
-                        setTimeout(resetDash, 100);
                     }
                     else if (cursors.left.isDown && cursors.space.isDown && dash == true || controller.left && controller.B && dash == true) {
                         offTouche = true;
@@ -353,7 +348,6 @@
                         setTimeout(cdDash, 2000);
                         setTimeout(blocageTouche, 100);
                         player.setVelocityX(-pDeplacementX*6)
-                        setTimeout(resetDash, 100);
                     }
                 }
             }
@@ -393,9 +387,6 @@
                 }
             }
             
-            function resetDash(player) {
-                player.setVelocityX(0);
-            }
             // Verification de la vie du joueur pour savoir si il est censé être mort ou non
             function verificationVie(){
                 console.log(health)
@@ -487,7 +478,6 @@
                     health -= 33;
                     pinvisible();
                 }
-                
             }
             
             // Gestion des frames d'invulnérabilité
@@ -522,7 +512,6 @@
                     this.player.visible = true;
                     clignotement = 0;
                 }
-                
             }
             
             //Gestion Item Heal
@@ -533,10 +522,6 @@
                     health += 33;
                 }
             }
-            
-            /* 
-            Sound Design
-            */
             
         </script>
     </body>
