@@ -23,7 +23,7 @@
             new Phaser.Game(config);
             function preload(){
                 //Preload Background + Second Plan
-                this.load.image('Foret', 'assets/BackgroundForet.png');
+                this.load.image('BackgroundForet', 'assets/BackgroundForet.png');
                 this.load.image('BackgroundGrotte', 'assets/BackgroundGrotte.png');
                 this.load.image('BackgroundDonjon', 'assets/BackgroundDonjon.png');
                 this.load.image('SecondPlanForet', 'assets/SecondPlanForet.png');
@@ -82,11 +82,11 @@
             
             function create(){
                 //Affichage backgound + Second Plan
-                this.add.image(800, 800, 'Foret');
-                this.add.image(800,800, 'BackgroundGrotte');
-                this.add.image(800,800, 'BackgroundDonjon');
+                this.add.image(800, 800, 'BackgroundForet');
                 this.add.image(800, 800, 'SecondPlanForet');
+                this.add.image(800,800, 'BackgroundGrotte');
                 this.add.image(800, 800, 'SecondPlanGrotte');
+                this.add.image(800,800, 'BackgroundDonjon');
                 this.add.image(800, 800, 'SecondPlanDonjon');
                 
                 //Chargement de la carte
@@ -269,18 +269,16 @@
                         player.setVelocityX(-pDeplacementX*1.5); 
                         player.anims.play('left', true); 
                     }
-                    
                     else if (cursors.left.isDown || controller.left ){ 
                         player.setVelocityX(-pDeplacementX); 
                         player.anims.play('left', true); 
                     }
-                    
+    
                     // Droite
                     else if(cursors.right.isDown && cursors.shift.isDown || controller.right && controller.A ){
                         player.setVelocityX(pDeplacementX*1.5); 
                         player.anims.play('right', true); 
                     }
-                    
                     else if (cursors.right.isDown || controller.right){ 
                         player.setVelocityX(pDeplacementX); 
                         player.anims.play('right', true); 
@@ -291,6 +289,7 @@
                         player.setVelocityX(0); 
                         player.anims.play('turn'); 
                     }
+
                     // Saut
                     if (cursors.up.isDown && player.body.blocked.down ||  controller.up && player.body.blocked.down){
                         player.setVelocityY(-pDeplacementY); 
@@ -307,7 +306,6 @@
                             player.setVelocityX(-50);
                             setTimeout(cdDJ, 500);
                     }
-                    
                     else if (cursors.up.isDown && player.body.blocked.left && walljump == true || controller.up && player.body.blocked.left && walljump == true) {
                             walljump = false;
                             offTouche = true;
