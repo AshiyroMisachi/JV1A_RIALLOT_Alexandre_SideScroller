@@ -233,9 +233,7 @@
                 this.physics.add.collider(player, plateforme_donjon, notRalentisseur, null, this);
                 this.physics.add.collider(player, plateforme_foret, notRalentisseur, null, this);
                 this.physics.add.collider(player, plateforme_grotte, notRalentisseur, null, this);
-                
                 this.physics.add.collider(player, ralentisseur, onRalentisseur, null, this);
-                
                 this.physics.add.overlap(player, item_heal, heal, null, this);
                 
                 //Collision PowerUp
@@ -300,8 +298,7 @@
                     }
                     
                     //Wall Jump
-                    if (cursors.up.isDown && player.body.blocked.right || controller.up && player.body.blocked.right) {
-                        if (walljump == true) {
+                    if (cursors.up.isDown && player.body.blocked.right && walljump == true || controller.up && player.body.blocked.right && walljump == true) {
                             walljump = false;
                             offTouche = true;
                             setTimeout(cdWallJump, 500);
@@ -309,11 +306,9 @@
                             player.setVelocityY(-pDeplacementY);
                             player.setVelocityX(-50);
                             setTimeout(cdDJ, 500);
-                        }
                     }
                     
-                    if (cursors.up.isDown && player.body.blocked.left || controller.up && player.body.blocked.left) {
-                        if (walljump == true) {
+                    else if (cursors.up.isDown && player.body.blocked.left && walljump == true || controller.up && player.body.blocked.left && walljump == true) {
                             walljump = false;
                             offTouche = true;
                             setTimeout(cdWallJump, 500);
@@ -321,7 +316,6 @@
                             player.setVelocityY(-pDeplacementY);
                             player.setVelocityX(50);
                             setTimeout(cdDJ, 500);
-                        }
                     }
                     
                     //Double Jump
@@ -336,14 +330,14 @@
                         dash = false;
                         setTimeout(cdDash, 2000);
                         setTimeout(blocageTouche, 100);
-                        player.setVelocityX(pDeplacementX*6)
+                        player.setVelocityX(pDeplacementX*6);
                     }
                     else if (cursors.left.isDown && cursors.space.isDown && dash == true || controller.left && controller.B && dash == true) {
                         offTouche = true;
                         dash = false;
                         setTimeout(cdDash, 2000);
                         setTimeout(blocageTouche, 100);
-                        player.setVelocityX(-pDeplacementX*6)
+                        player.setVelocityX(-pDeplacementX*6);
                     }
                 }
             }
