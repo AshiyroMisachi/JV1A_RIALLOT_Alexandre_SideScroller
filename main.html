@@ -424,9 +424,9 @@
             
             // Gestion de l'intéraction Joueur Ennemi
             function collisionEnnemi(player, bat) {
-                if (player.body.touching.down) {
-                    bat.disableBody(true, true);
-                    player.setVelocityY(-pDeplacementY);
+                if (player.body.touching.up) {
+                    player.setVelocityX(50);
+                    beHit = true;
                 }
                 else if (player.body.touching.right) {
                     player.setVelocityX(-50);
@@ -437,8 +437,8 @@
                     beHit = true;
                 }
                 else {
-                    player.setVelocityX(50);
-                    beHit = true;
+                    bat.disableBody(true, true);
+                    player.setVelocityY(-pDeplacementY);
                 }
 
                 if (beHit == true){
