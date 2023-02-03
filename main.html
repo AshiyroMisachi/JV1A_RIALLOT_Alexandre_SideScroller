@@ -5,7 +5,6 @@
     <script src="//cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"> </script>
     <style type="text/css"> body {margin: 0; } </style>
 </head>
-
 <body>
     <script type="text/javascript">
         var config = {
@@ -297,7 +296,6 @@
                     }
                     // Saut
                     if (cursors.up.isDown && player.body.blocked.down ||  controller.up && player.body.blocked.down){
-                        console.log("SAUT CLASSIQUE");
                         player.setVelocityY(-pDeplacementY); 
                         setTimeout(cdDJ, 500);
                     }
@@ -329,7 +327,6 @@
                     
                     //Double Jump
                     if ( (cursors.up.isDown && doublejump == true && player.body.blocked.none) || (controller.up && doublejump == true && player.body.blocked.none) ) {
-                        console.log("DOUBLE JUMP");
                         player.setVelocityY(-pDeplacementY);
                         doublejump = false;
                     }
@@ -389,9 +386,7 @@
             
             // Verification de la vie du joueur pour savoir si il est censé être mort ou non
             function verificationVie(){
-                console.log(health)
                 if (health  == 0){
-                    console.log("Tmort");
                     player.setTint(0xff0000);
                     player.anims.play('turn');
                     this.physics.pause();
@@ -401,7 +396,6 @@
             
             // Gestion de la mort du personnage
             function mort() {
-                console.log("Tmort");
                 this.physics.pause();
                 player.setTint(0xff0000);
                 player.anims.play('turn');
@@ -415,7 +409,6 @@
             
             //Gestion Victoire
             function victory() {
-                console.log("YOU WIN");
                 this.physics.pause();
                 player.setTint(0x008000);
                 player.anims.play('turn');
@@ -441,36 +434,23 @@
             // Gestion de l'intéraction Joueur Ennemi
             function collisionEnnemi(player, bat) {
                 if (player.body.touching.down) {
-                    console.log("kill ennemy");
                     bat.disableBody(true, true);
                     player.setVelocityY(-pDeplacementY);
                 }
                 else if (player.body.touching.right) {
-                    console.log("paf droite");
                     player.setVelocityX(-50);
                     beHit = true;
-                    setTimeout(ableHit, 500); 
-                    offTouche = true;
-                    setTimeout(blocageTouche, 200);
-                    this.healthMask.x -= 33;
-                    health -= 33;
-                    pinvisible();
                 }
                 else if (player.body.touching.left) {
-                    console.log("paf gauche");
                     player.setVelocityX(50);
                     beHit = true;
-                    setTimeout(ableHit, 500); 
-                    offTouche = true;
-                    setTimeout(blocageTouche, 200);
-                    this.healthMask.x -= 33;
-                    health -= 33;
-                    pinvisible();
                 }
                 else {
-                    console.log("paf mid");
                     player.setVelocityX(50);
                     beHit = true;
+                }
+
+                if (beHit == true){
                     setTimeout(ableHit, 500); 
                     offTouche = true;
                     setTimeout(blocageTouche, 200);
@@ -492,18 +472,15 @@
             
             function ableHit() {
                 beHit = false;
-                console.log("Peut se faire touché");
             }
             
             function pinvisible() {
-                console.log("invisible");
                 this.player.visible = false;
                 setTimeout(pvisible, 100);
             }
             
             function pvisible() {
                 if (clignotement < 2) {
-                    console.log("visible");
                     this.player.visible = true;
                     setTimeout(pinvisible, 100);   
                     clignotement += 1;
