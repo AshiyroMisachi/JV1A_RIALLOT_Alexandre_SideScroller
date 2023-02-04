@@ -55,6 +55,7 @@
                 //Preload barre de vie
                 this.load.image('CadreVie', 'assets/CadreVie.png');
                 this.load.image('BarreVie', 'assets/BarreVie.png');
+                this.load.image('MaskVie', 'assets/MaskVie.png');
             }
             
             // Variable Player
@@ -245,9 +246,9 @@
                 this.physics.add.collider(bat, bordure_ennemi);
                 
                 //Création Barre de vie
-                let healthContainer = this.add.sprite(80, 20, "CadreVie").setScrollFactor(0);
-                let healthBar = this.add.sprite(healthContainer.x, healthContainer.y, "BarreVie").setScrollFactor(0);
-                this.healthMask = this.add.sprite(healthBar.x, healthBar.y, "BarreVie").setScrollFactor(0);
+                let healthContainer = this.add.sprite(100, 40, "CadreVie").setScrollFactor(0).setScale(2);
+                let healthBar = this.add.sprite(healthContainer.x, healthContainer.y, "BarreVie").setScrollFactor(0).setScale(2);
+                this.healthMask = this.add.sprite(healthBar.x, healthBar.y, "MaskVie").setScrollFactor(0).setScale(2);
                 this.healthMask.visible = false;
                 healthBar.mask = new Phaser.Display.Masks.BitmapMask(this, this.healthMask);
             }  
@@ -445,7 +446,7 @@
                     setTimeout(ableHit, 500); 
                     offTouche = true;
                     setTimeout(blocageTouche, 200);
-                    this.healthMask.x -= 33;
+                    this.healthMask.x -= 66;
                     health -= 33;
                     pinvisible();
                 }
@@ -486,7 +487,7 @@
             function heal(player, item_heal) {
                 item_heal.disableBody(true, true);
                 if (health < 99){
-                    this.healthMask.x += 33;
+                    this.healthMask.x += 66;
                     health += 33;
                 }
             }
