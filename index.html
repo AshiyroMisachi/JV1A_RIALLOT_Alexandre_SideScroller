@@ -443,7 +443,6 @@
                 }
 
                 if (beHit == true){
-                    setTimeout(ableHit, 500); 
                     offTouche = true;
                     setTimeout(blocageTouche, 200);
                     this.healthMask.x -= 66;
@@ -461,18 +460,14 @@
                     return false
                 }
             }
-            
-            function ableHit() {
-                beHit = false;
-            }
-            
+
             function pinvisible() {
                 this.player.visible = false;
                 setTimeout(pvisible, 100);
             }
             
             function pvisible() {
-                if (clignotement < 2) {
+                if (clignotement < 4) {
                     this.player.visible = true;
                     setTimeout(pinvisible, 100);   
                     clignotement += 1;
@@ -480,6 +475,7 @@
                 else {
                     this.player.visible = true;
                     clignotement = 0;
+                    beHit = false;
                 }
             }
             
